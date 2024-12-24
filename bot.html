@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Chatbot</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('background image.avif') no-repeat center center fixed;
+            background-size: cover;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            animation: fadeIn 3s ease-in-out;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: #fff;
+            color: #6a11cb;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: bounce 2s infinite;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            background: #eaeaea;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .hero img {
+            max-width: 80%;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .features {
+            padding: 50px 20px;
+            text-align: center;
+            background: #fff;
+            color: #333;
+            border-radius: 50px 50px 0 0;
+        }
+
+        .features h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .features .feature {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .features .feature div {
+            max-width: 300px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .features img {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .testimonials {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .testimonials h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .testimonials p {
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            background: #333;
+            color: #ccc;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+            .features .feature {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <!-- Add Google API Script -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <!-- Google Sign-In Configurations -->
+    <script>
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            console.log('Signed in as: ' + profile.getName());
+            // Perform additional actions here (e.g., sending user's profile info to backend)
+        }
+
+        function renderGoogleButton() {
+            gapi.signin2.render('google-signin', {
+                'scope': 'profile email',
+                'width': 200,
+                'height': 50,
+                'longtitle': true,
+                'theme': 'dark',
+                'onsuccess': onSignIn
+            });
+        }
+
+        // Initialize Google API after page load
+        window.onload = function() {
+            gapi.load('auth2', function() {
+                gapi.auth2.init({
+                    client_id: 'YOUR_GOOGLE_CLIENT_ID'  // Replace with your actual client ID
+                }).then(renderGoogleButton);
+            });
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Replika-Inspired Chatbot</h1>
+        <p>Your AI companion, always here for you.</p>
+        <button class="btn">Start Chatting</button>
+    </header>
+
+    <section class="hero">
+        <img src="https://via.placeholder.com/800x400" alt="Chatbot Illustration">
+        <p>Experience personalized conversations and emotional support tailored to you.</p>
+    </section>
+
+    <!-- Google Sign-In Button Container -->
+    <section style="text-align: center; margin-top: 20px;">
+        <div id="google-signin"></div>
+    </section>
+
+    <section class="features">
+        <h2>Features</h2>
+        <div class="feature">
+            <div>
+                <img src="https://via.placeholder.com/100" alt="Feature Icon">
+                <p>Emotional Recognition</p>
+            </div>
+            <div>
+                <img src="https://via.placeholder.com/100" alt="Feature Icon">
+                <p>Interactive Conversations</p>
+            </div>
+            <div>
+                <img src="https://via.placeholder.com/100" alt="Feature Icon">
+                <p>Personalized Responses</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <h2>What Our Users Say</h2>
+        <p>"This chatbot feels like a real friend, always understanding my mood."</p>
+    </section>
+
+    <footer>
+        <p>© 2024 Replika-Inspired Design. All rights reserved.</p>
+    </footer>
+</body>
+</html>
