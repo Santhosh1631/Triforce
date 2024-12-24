@@ -10,9 +10,10 @@
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background: url('background image.avif') no-repeat center center fixed;
+            background: url('templates/img/homepage.png') no-repeat center center fixed;
             background-size: cover;
             overflow-x: hidden;
+            color: #fff;
         }
 
         header {
@@ -51,52 +52,22 @@
         }
 
         .hero {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 60px 20px;
-            text-align: center;
-        }
+    display: flex;
+ /* Center content horizontally */
+    align-items: center;     /* Center content vertically */
+    position: absolute;
+    top: 50%;                /* Vertically center the content */
+    right: 0;                /* Align content to the right */
+    transform: translateY(-50%); /* Adjust for perfect vertical centering */
+    padding: 60px 20px;
+    text-align: center;
+    height: auto;
+    margin-left: 70%;
+    margin-top: 5%;
+    justify-content: stretch;
+}
 
-        .hero img {
-            max-width: 80%;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
 
-        .features {
-            padding: 50px 20px;
-            text-align: center;
-            background: #fff;
-            color: #333;
-            border-radius: 50px 50px 0 0;
-        }
-
-        .features h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .features .feature {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .features .feature div {
-            max-width: 300px;
-            text-align: center;
-            padding: 10px;
-        }
-
-        .features img {
-            max-width: 100px;
-            margin-bottom: 10px;
-        }
 
         .testimonials {
             padding: 50px 20px;
@@ -118,6 +89,7 @@
             color: #ccc;
             padding: 20px;
             text-align: center;
+            position: fixed;
         }
 
         /* Animations */
@@ -143,9 +115,6 @@
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2.5rem;
-            }
-            .features .feature {
-                flex-direction: column;
             }
         }
     </style>
@@ -184,14 +153,14 @@
 </head>
 <body>
     <header>
-        <h1>Replika-Inspired Chatbot</h1>
+        <h1>Triforce chatbot</h1>
         <p>Your AI companion, always here for you.</p>
         <button class="btn">Start Chatting</button>
     </header>
 
     <section class="hero">
-        <img src="https://via.placeholder.com/800x400" alt="Chatbot Illustration">
-        <p>Experience personalized conversations and emotional support tailored to you.</p>
+
+        <p>The Triforce chatbot is a compassionate AI companion designed specifically for neurodivergent individuals. It offers personalized interactions, emotional recognition, and tailored support to cater to different cognitive needs. By incorporating features like simplified content, progress tracking, and adaptive responses, it ensures a supportive and understanding environment for every user.</p>
     </section>
 
     <!-- Google Sign-In Button Container -->
@@ -199,28 +168,7 @@
         <div id="google-signin"></div>
     </section>
 
-    <section class="features">
-        <h2>Features</h2>
-        <div class="feature">
-            <div>
-                <img src="https://via.placeholder.com/100" alt="Feature Icon">
-                <p>Emotional Recognition</p>
-            </div>
-            <div>
-                <img src="https://via.placeholder.com/100" alt="Feature Icon">
-                <p>Interactive Conversations</p>
-            </div>
-            <div>
-                <img src="https://via.placeholder.com/100" alt="Feature Icon">
-                <p>Personalized Responses</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="testimonials">
-        <h2>What Our Users Say</h2>
-        <p>"This chatbot feels like a real friend, always understanding my mood."</p>
-    </section>
+    
 
     <footer>
         <p>© 2024 Replika-Inspired Design. All rights reserved.</p>
