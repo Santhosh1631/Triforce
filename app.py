@@ -3,7 +3,7 @@ from flask_cors import CORS
 import google.generativeai as genai
 app = Flask(__name__)
 CORS(app)
-GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"  # Replace with your actual API key
+GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"  
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
 def prompt(user_input):
@@ -23,4 +23,4 @@ def chat():
 
     return jsonify({"response": bot_message})
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)  
+    app.run(debug=True, port=5001)
