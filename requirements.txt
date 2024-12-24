@@ -2,3 +2,4 @@ Flask
 flask-cors
 google-generativeai
 # pip install -r requirements.txt
+#first
