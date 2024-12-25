@@ -1,324 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Avatar Chat</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background: url("img/chatbot bg.jpg") no-repeat center center;
-        background-size: cover;
-        color: #000000;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avatar Chat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: url("img/chatbot bg.jpg") no-repeat center center;
+      background-size: cover;
+      color: #000000;
+    }
 
-      .chat-container {
-        width: 90%;
-        max-width: 800px;
-        border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        color: #000000;
-      }
+    .chat-container {
+      width: 90%;
+      max-width: 800px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+     
+    }
 
-      .chat-box {
-        height: 500px;
-        padding: 15px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        color: #333;
-      }
+    .chat-box {
+      position: relative;
+      height: 500px;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+    }
 
-      .message {
-        margin: 10px 0;
-        padding: 10px 15px;
-        border-radius: 10px;
-        max-width: 70%;
-<<<<<<< HEAD
-        display: flex;
-        align-items: center;
-=======
->>>>>>> 1ef31cc7134fb9b4f87cf3049ee819c076b9d84e
-      }
+    .message {
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 70%;
+      display: inline-block;
+      position: relative;
+    }
 
-      .user-message {
-        align-self: flex-end;
-        background: rgba(36, 150, 255, 0.8);
-        color: white;
-      }
+    .user-message {
+      align-self: flex-end;
+      background: rgba(36, 150, 255, 0.8);
+      color: white;
+    }
 
-      .bot-message {
-        align-self: flex-start;
-        background: rgba(108, 71, 230, 0.8);
-        color: white;
-<<<<<<< HEAD
-        position: relative;
-      }
+    .bot-message {
+      align-self: flex-start;
+      background: rgba(108, 71, 230, 0.8);
+      color: white;
+      position: relative;
+    }
 
-      .bot-message .mic-icon {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        cursor: pointer;
-        font-size: 1.2rem;
-        color: white;
-=======
->>>>>>> 1ef31cc7134fb9b4f87cf3049ee819c076b9d84e
-      }
+    .mic-icon {
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #fff;
+    }
 
-      .input-container {
-        display: flex;
-        border-top: 1px solid rgba(255, 255, 255, 0.5);
-<<<<<<< HEAD
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(5px);
-=======
-        background: rgba(
-          255,
-          255,
-          255,
-          0.2
-        ); /* Semi-transparent input container */
-        backdrop-filter: blur(5px); /* Optional blur effect */
->>>>>>> 1ef31cc7134fb9b4f87cf3049ee819c076b9d84e
-      }
+    .input-container {
+      display: flex;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+    }
 
-      input[type="text"] {
-        flex: 1;
-        padding: 15px;
-        font-size: 1rem;
-        border: none;
-        outline: none;
-<<<<<<< HEAD
-        background: transparent;
-        color: black;
-      }
+    input[type="text"] {
+      flex: 1;
+      padding: 15px;
+      font-size: 1rem;
+      border: none;
+      outline: none;
+    }
 
-      input[type="text"]::placeholder {
-        color: rgba(0, 0, 0, 0.6);
-=======
-        background: transparent; /* Transparent input field */
-        color: black; /* Set input text color to black */
-      }
+    button {
+      padding: 15px 20px;
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+      border: none;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
 
-      input[type="text"]::placeholder {
-        color: rgba(0, 0, 0, 0.6); /* Darker placeholder for visibility */
->>>>>>> 1ef31cc7134fb9b4f87cf3049ee819c076b9d84e
-      }
+    .mute-container {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-      button {
-        padding: 15px 20px;
-        background: linear-gradient(135deg, #2575fc, #6a11cb);
-        border: none;
-        color: white;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.3s ease;
-      }
+    .speed-control {
+      margin-top: 20px;
+      text-align: center;
+    }
 
-      button:hover {
-        background: linear-gradient(135deg, #6a11cb, #2575fc);
-      }
-<<<<<<< HEAD
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
 
-      .mute-container {
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .mute-label {
-        margin-right: 10px;
-        font-size: 1rem;
-        color: white;
-      }
-
-      input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-      }
-
-      /* Speed Control */
-      .speed-control {
-        margin-top: 20px;
-        text-align: center;
-      }
-
-      .speed-slider {
-        width: 200px;
-      }
-
-      .speed-label {
-        color: white;
-        margin-bottom: 5px;
-      }
-
-      .controls {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-      }
-
-      .controls button {
-        padding: 10px 15px;
-        background: rgba(108, 71, 230, 0.8);
-        color: white;
-        font-size: 1rem;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-=======
->>>>>>> 1ef31cc7134fb9b4f87cf3049ee819c076b9d84e
-    </style>
-  </head>
-  <body>
-    <div class="chat-container">
-      <div class="chat-box" id="chat-box">
-<<<<<<< HEAD
-        <div class="message bot-message">
-          Hi! How can I assist you today?
-          <span class="mic-icon" onclick="speakText('Hi! How can I assist you today?')">&#127909;</span>
-        </div>
-=======
-        <div class="message bot-message">Hi! How can I assist you today?</div>
->>>>>>> 1ef31cc7134fb9b4f87cf3049ee819c076b9d84e
-      </div>
-      <div class="input-container">
-        <input type="text" id="user-input" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
-      </div>
-
-      <div class="mute-container">
-        <label class="mute-label" for="mute-toggle">Enable Text-to-Speech</label>
-        <input type="checkbox" id="mute-toggle" />
-      </div>
-
-      <!-- Speed Control -->
-      <div class="speed-control">
-        <label class="speed-label" for="speed-slider">Adjust Reading Speed</label>
-        <input type="range" id="speed-slider" class="speed-slider" min="0.1" max="2" step="0.1" value="1" />
-      </div>
-
-      <!-- Controls for Speech -->
-      <div class="controls">
-        <button onclick="pauseSpeech()">Pause</button>
-        <button onclick="resumeSpeech()">Resume</button>
-        <button onclick="moveBackward()">Backward</button>
-        <button onclick="moveForward()">Forward</button>
+    .highlight {
+      background-color: rgba(255, 223, 0, 0.6);
+      border-radius: 5px;
+      padding: 0 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chat-box">
+      <div class="message bot-message">
+        Hi! How can I assist you today?
+        <span class="mic-icon" onclick="speakText('Hi! How can I assist you today?')">&#127909;</span>
       </div>
     </div>
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Type a message..." />
+      <button id="send-btn">Send</button>
+    </div>
+    <div class="mute-container">
+      <label class="mute-label" for="mute-toggle">Enable Text-to-Speech</label>
+      <input type="checkbox" id="mute-toggle" />
+    </div>
+    <div class="speed-control">
+      <label class="speed-label" for="speed-slider">Adjust Reading Speed</label>
+      <input type="range" id="speed-slider" class="speed-slider" min="0.1" max="2" step="0.1" value="1" />
+    </div>
+    <div class="controls">
+      <button onclick="pauseSpeech()">Pause</button>
+      <button onclick="resumeSpeech()">Resume</button>
+      <button onclick="moveBackward()">Backward</button>
+      <button onclick="moveForward()">Forward</button>
+    </div>
+  </div>
 
-    <script>
-      let isMute = true;
-      let speechSynthesisInstance;
-      let speechQueue = [];
-      let isPaused = false;
-      let currentSpeechIndex = 0;
-      let isSpeaking = false;
+  <script>
+    let isMute = true;
+    let speechQueue = [];
+    let currentSpeechIndex = -1;
+    let isPaused = false;
 
-      // Function to convert text to speech
-      function speakText(text) {
-        if (!isMute) {
-          if (speechSynthesis.speaking || isPaused) {
-            speechSynthesis.cancel();
-          }
+    function highlightText(element, startIndex, endIndex) {
+      const text = element.textContent;
+      const highlightedText =
+        text.slice(0, startIndex) +
+        `<span class="highlight">${text.slice(startIndex, endIndex)}</span>` +
+        text.slice(endIndex);
+      element.innerHTML = highlightedText;
+    }
 
-          // Create a new SpeechSynthesisUtterance
-          speechSynthesisInstance = new SpeechSynthesisUtterance(text);
-          speechSynthesisInstance.rate = document.getElementById("speed-slider").value; // Set the speed
-          speechSynthesis.speak(speechSynthesisInstance);
+    function speakText(text, element = null) {
+      if (!isMute && "speechSynthesis" in window) {
+        console.log("Speaking:", text);
 
-          // Add the speech to the queue
-          speechQueue.push(speechSynthesisInstance);
-          currentSpeechIndex = speechQueue.length - 1;
-          isSpeaking = true;
+        // Cancel ongoing speech before starting new one
+        speechSynthesis.cancel();
 
-          // Reset the paused state
-          isPaused = false;
+        // Split the text into words for word-by-word highlighting
+        const words = text.split(" ");
+        let wordIndex = 0;
 
-          // Handle end of speech event
-          speechSynthesisInstance.onend = function() {
-            isSpeaking = false;
-            isPaused = false;
+        // Create a new SpeechSynthesisUtterance
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = document.getElementById("speed-slider").value; // Adjust speed
+
+        // If we have an element to highlight, we highlight each word
+        if (element) {
+          // Start speaking and highlight word by word
+          utterance.onboundary = function (event) {
+            if (event.name === "word") {
+              // Get the start and end indices of the current word
+              const startIndex = event.charIndex;
+              const endIndex = startIndex + event.charLength;
+
+              // Highlight the word in the text
+              highlightText(element, startIndex, endIndex);
+            }
           };
         }
-      }
 
-      // Pause the speech
-      function pauseSpeech() {
-        if (speechSynthesis.speaking) {
-          speechSynthesisInstance.pause();
-          isPaused = true;
-        }
-      }
+        // Speak the text
+        speechSynthesis.speak(utterance);
 
-      // Resume the speech
-      function resumeSpeech() {
-        if (isPaused) {
-          speechSynthesisInstance.resume();
+        utterance.onend = () => {
           isPaused = false;
-        }
+          console.log("Speech finished.");
+        };
+
+        utterance.onerror = (e) => {
+          console.error("Speech error:", e);
+        };
+      } else {
+        console.log("Text-to-Speech is muted or unsupported.");
       }
+    }
 
-      // Move backward in the speech (play previous speech in the queue)
-      function moveBackward() {
-        if (currentSpeechIndex > 0) {
-          currentSpeechIndex--;
-          const prevSpeech = speechQueue[currentSpeechIndex];
-          speechSynthesis.speak(prevSpeech);
-        }
+    function pauseSpeech() {
+      if (speechSynthesis.speaking && !isPaused) {
+        speechSynthesis.pause();
+        isPaused = true;
       }
+    }
 
-      // Move forward in the speech (play next speech in the queue)
-      function moveForward() {
-        if (currentSpeechIndex < speechQueue.length - 1) {
-          currentSpeechIndex++;
-          const nextSpeech = speechQueue[currentSpeechIndex];
-          speechSynthesis.speak(nextSpeech);
-        }
+    function resumeSpeech() {
+      if (isPaused) {
+        speechSynthesis.resume();
+        isPaused = false;
       }
+    }
 
-      // Event listener for mute toggle
-      document.getElementById("mute-toggle").addEventListener("change", function () {
-        isMute = !this.checked; // Uncheck means enabled, check means muted
-      });
+    function moveBackward() {
+      if (currentSpeechIndex > 0) {
+        speechSynthesis.cancel();
+        currentSpeechIndex--;
+        const previousUtterance = speechQueue[currentSpeechIndex];
+        speechSynthesis.speak(previousUtterance);
+      }
+    }
 
-      function sendMessage() {
-        const userInput = document.getElementById("user-input").value;
-        if (userInput.trim() !== "") {
-          const chatBox = document.getElementById("chat-box");
-          chatBox.innerHTML += `<div class="message user-message">${userInput}</div>`;
-          document.getElementById("user-input").value = "";
+    function moveForward() {
+      if (currentSpeechIndex < speechQueue.length - 1) {
+        speechSynthesis.cancel();
+        currentSpeechIndex++;
+        const nextUtterance = speechQueue[currentSpeechIndex];
+        speechSynthesis.speak(nextUtterance);
+      }
+    }
 
-          fetch("http://localhost:5001/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: userInput }),
+    document.getElementById("mute-toggle").addEventListener("change", function () {
+      isMute = !this.checked;
+    });
+
+    document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+    function sendMessage() {
+      const userInput = document.getElementById("user-input").value.trim();
+      if (userInput) {
+        const chatBox = document.getElementById("chat-box");
+
+        const userMessage = document.createElement("div");
+        userMessage.classList.add("message", "user-message");
+        userMessage.textContent = userInput;
+        chatBox.appendChild(userMessage);
+
+        document.getElementById("user-input").value = "";
+
+        fetch("http://localhost:5001/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userInput }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const botResponse = data.response;
+
+            const botMessage = document.createElement("div");
+            botMessage.classList.add("message", "bot-message");
+            botMessage.textContent = botResponse;
+
+            const micIcon = document.createElement("span");
+            micIcon.classList.add("mic-icon");
+            micIcon.innerHTML = "&#127909;";
+            micIcon.onclick = () => speakText(botResponse);
+            botMessage.appendChild(micIcon);
+
+            chatBox.appendChild(botMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            if (!isMute) speakText(botResponse, botMessage);
           })
-            .then((response) => response.json())
-            .then((data) => {
-              const botResponse = data.response;
-              chatBox.innerHTML += `
-                <div class="message bot-message">
-                  ${botResponse}
-                  <span class="mic-icon" onclick="speakText('${botResponse}')">&#127909;</span>
-                </div>`;
-              chatBox.scrollTop = chatBox.scrollHeight;
-            })
-            .catch((error) => console.error("Error:", error));
-        }
+          .catch((error) => console.error("Error:", error));
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
 </html>
