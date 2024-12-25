@@ -19,6 +19,7 @@
         header {
             text-align: center;
             padding: 80px 20px;
+            position: relative;
         }
 
         header h1 {
@@ -50,65 +51,95 @@
             transform: scale(1.1);
             background: #eaeaea;
         }
-
         .hero {
     display: flex;
- /* Center content horizontally */
-    align-items: center;     /* Center content vertically */
+    align-items: center;          /* Center content vertically */
     position: absolute;
-    top: 50%;                /* Vertically center the content */
-    right: 0;                /* Align content to the right */
-    transform: translateY(-50%); /* Adjust for perfect vertical centering */
+    top: 50%;                     /* Vertically center the content */
+    right: 0;                     /* Align content to the right */
+    transform: translateY(-50%);  /* Adjust for perfect vertical centering */
     padding: 60px 20px;
-    text-align: center;
+    text-align: left;             /* Ensure text starts from the left */
     height: auto;
     margin-left: 70%;
     margin-top: 5%;
-    justify-content: stretch;
+    margin-right: 4%;
 }
 
 
-
-        .testimonials {
-            padding: 50px 20px;
-            text-align: center;
+        /* Sign-In Button */
+        .signin-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #6a11cb;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
         }
 
-        .testimonials h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+        .signin-btn:hover {
+            background: #540da5;
         }
 
-        .testimonials p {
-            font-style: italic;
-            font-size: 1.2rem;
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
         }
 
-        footer {
-            background: #333;
-            color: #ccc;
+        .modal-content {
+            background: #fff;
+            color: #000;
+            border-radius: 10px;
             padding: 20px;
             text-align: center;
-            position: fixed;
+            width: 80%;
+            max-width: 400px;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        .modal-content h2 {
+            margin-top: 0;
         }
 
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
+        .modal-content input,
+        .modal-content button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        .modal-content button {
+            background: #6a11cb;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background: #540da5;
+        }
+
+        .modal-content .close {
+            background: none;
+            color: #000;
+            font-size: 1.5rem;
+            text-align: right;
+            cursor: pointer;
+            border: none;
         }
 
         /* Responsive Design */
@@ -121,57 +152,42 @@
 
     <!-- Add Google API Script -->
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-
-    <!-- Google Sign-In Configurations -->
-    <script>
-        function onSignIn(googleUser) {
-            var profile = googleUser.getBasicProfile();
-            console.log('Signed in as: ' + profile.getName());
-            // Perform additional actions here (e.g., sending user's profile info to backend)
-        }
-
-        function renderGoogleButton() {
-            gapi.signin2.render('google-signin', {
-                'scope': 'profile email',
-                'width': 200,
-                'height': 50,
-                'longtitle': true,
-                'theme': 'dark',
-                'onsuccess': onSignIn
-            });
-        }
-
-        // Initialize Google API after page load
-        window.onload = function() {
-            gapi.load('auth2', function() {
-                gapi.auth2.init({
-                    client_id: 'YOUR_GOOGLE_CLIENT_ID'  // Replace with your actual client ID
-                }).then(renderGoogleButton);
-            });
-        };
-    </script>
 </head>
 <body>
     <header>
-        <h1>Triforce chatbot</h1>
+        <h1>Triforce Chatbot</h1>
         <p>Your AI companion, always here for you.</p>
         <button class="btn">Start Chatting</button>
+        <!-- Sign-In Button -->
+        <button class="signin-btn" onclick="openModal()">Sign In</button>
     </header>
 
     <section class="hero">
-
-        <p>The Triforce chatbot is a compassionate AI companion designed specifically for neurodivergent individuals. It offers personalized interactions, emotional recognition, and tailored support to cater to different cognitive needs. By incorporating features like simplified content, progress tracking, and adaptive responses, it ensures a supportive and understanding environment for every user.</p>
+        <p>"Triforce is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth. It's more than a tool—it's an empowering companion for every student's journey."</p>
     </section>
 
-    <!-- Google Sign-In Button Container -->
-    <section style="text-align: center; margin-top: 20px;">
-        <div id="google-signin"></div>
-    </section>
+    <!-- Modal for Sign-In -->
+    <div id="signinModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal()">&times;</button>
+            <h2>Sign In</h2>
+            <input type="text" placeholder="Username" required>
+            <input type="password" placeholder="Password" required>
+            <input type="file" accept="application/pdf" placeholder="Upload Cognitive Assessment Report" required>
+            <button>Submit</button>
+        </div>
+    </div>
 
     
 
-    <footer>
-        <p>© 2024 Replika-Inspired Design. All rights reserved.</p>
-    </footer>
+    <script>
+        function openModal() {
+            document.getElementById('signinModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('signinModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
