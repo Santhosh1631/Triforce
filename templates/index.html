@@ -1,289 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Avatar Chat</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: url("img/chatbot bg.jpg") no-repeat center center;
-      background-size: cover;
-      color: #000000;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avatar Chat</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: url("img/chatbot bg.jpg") no-repeat center center;
+        background-size: cover;
+        color: #000000;
+      }
 
-    .chat-container {
-      width: 90%;
-      max-width: 800px;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-     
-    }
+      .chat-container {
+        width: 90%;
+        max-width: 800px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
 
-    .chat-box {
-      position: relative;
-      height: 500px;
-      padding: 15px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      color: #333;
-    }
+      .chat-box {
+        position: relative;
+        height: 500px;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        color: #333;
+      }
 
-    .message {
-      margin: 10px 0;
-      padding: 10px 15px;
-      border-radius: 10px;
-      max-width: 70%;
-      display: inline-block;
-      position: relative;
-    }
+      .message {
+        margin: 10px 0;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 70%;
+        display: inline-block;
+      }
 
-    .user-message {
-      align-self: flex-end;
-      background: rgba(36, 150, 255, 0.8);
-      color: white;
-    }
+      .user-message {
+        align-self: flex-end;
+        background: rgba(36, 150, 255, 0.8);
+        color: white;
+      }
 
-    .bot-message {
-      align-self: flex-start;
-      background: rgba(108, 71, 230, 0.8);
-      color: white;
-      position: relative;
-    }
+      .bot-message {
+        align-self: flex-start;
+        background: rgba(108, 71, 230, 0.8);
+        color: white;
+        position: relative;
+      }
 
-    .mic-icon {
-      position: absolute;
-      right: -30px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #fff;
-    }
+      .icon-container {
+        display: flex;
+        margin-left: 20%;
+        gap: 20px;
+      }
 
-    .input-container {
-      display: flex;
-      border-top: 1px solid rgba(0, 0, 0, 0.2);
-    }
+      .icon {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        fill: white;
+        transition: transform 0.2s, fill 0.2s;
+      }
 
-    input[type="text"] {
-      flex: 1;
-      padding: 15px;
-      font-size: 1rem;
-      border: none;
-      outline: none;
-    }
+      .icon:hover {
+        fill: #ffd700;
+        transform: scale(1.2);
+      }
 
-    button {
-      padding: 15px 20px;
-      background: linear-gradient(135deg, #2575fc, #6a11cb);
-      border: none;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-    }
+      .input-container {
+        display: flex;
+        border-top: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+      }
 
-    .mute-container {
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      input[type="text"] {
+        flex: 1;
+        padding: 15px;
+        font-size: 1rem;
+        border: none;
+        outline: none;
+        border-radius: 10px;
+      }
 
-    .speed-control {
-      margin-top: 20px;
-      text-align: center;
-    }
+      button {
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #2575fc, #6a11cb);
+        border: none;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        border-radius: 5px;
+      }
 
-    .controls {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-    }
+      .speed-control {
+        margin: 10px;
+        text-align: center;
+      }
 
-    .highlight {
-      background-color: rgba(255, 223, 0, 0.6);
-      border-radius: 5px;
-      padding: 0 2px;
-    }
-  </style>
-</head>
-<body>
-  <div class="chat-container">
-    <div class="chat-box" id="chat-box">
-      <div class="message bot-message">
-        Hi! How can I assist you today?
-        <span class="mic-icon" onclick="speakText('Hi! How can I assist you today?')">&#127909;</span>
+      .speed-label {
+        font-size: 0.9rem;
+        margin-right: 10px;
+      }
+
+      .speed-slider {
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-box" id="chat-box">
+        <div class="message bot-message" id="bot-message-1">
+          Hi! How can I assist you today?
+        </div>
+        <div class="icon-container">
+          <!-- Mic Icon -->
+          <svg
+            class="icon"
+            onclick="speakText('Hi! How can I assist you today?')"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.87 3.13 7 7 7v4h-2v2h6v-2h-2v-4c3.87 0 7-3.13 7-7h-2z"
+            />
+          </svg>
+          <!-- Copy Icon -->
+          <svg
+            class="icon"
+            onclick="copyTextToClipboard('Hi! How can I assist you today?', this)"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type a message..." />
+        <button id="send-btn">Send</button>
+      </div>
+      <div class="speed-control">
+        <label class="speed-label" for="speed-slider">Speech Speed:</label>
+        <input
+          type="range"
+          id="speed-slider"
+          class="speed-slider"
+          min="0.5"
+          max="2"
+          step="0.1"
+          value="1"
+        />
       </div>
     </div>
-    <div class="input-container">
-      <input type="text" id="user-input" placeholder="Type a message..." />
-      <button id="send-btn">Send</button>
-    </div>
-    <div class="mute-container">
-      <label class="mute-label" for="mute-toggle">Enable Text-to-Speech</label>
-      <input type="checkbox" id="mute-toggle" />
-    </div>
-    <div class="speed-control">
-      <label class="speed-label" for="speed-slider">Adjust Reading Speed</label>
-      <input type="range" id="speed-slider" class="speed-slider" min="0.1" max="2" step="0.1" value="1" />
-    </div>
-    <div class="controls">
-      <button onclick="pauseSpeech()">Pause</button>
-      <button onclick="resumeSpeech()">Resume</button>
-      <button onclick="moveBackward()">Backward</button>
-      <button onclick="moveForward()">Forward</button>
-    </div>
-  </div>
 
-  <script>
-    let isMute = true;
-    let speechQueue = [];
-    let currentSpeechIndex = -1;
-    let isPaused = false;
+    <script>
+      function speakText(text) {
+        if ("speechSynthesis" in window) {
+          const utterance = new SpeechSynthesisUtterance(text);
 
-    function highlightText(element, startIndex, endIndex) {
-      const text = element.textContent;
-      const highlightedText =
-        text.slice(0, startIndex) +
-        `<span class="highlight">${text.slice(startIndex, endIndex)}</span>` +
-        text.slice(endIndex);
-      element.innerHTML = highlightedText;
-    }
+          // Get speech speed from slider
+          const speechSpeed = document.getElementById("speed-slider").value;
+          utterance.rate = speechSpeed;
 
-    function speakText(text, element = null) {
-      if (!isMute && "speechSynthesis" in window) {
-        console.log("Speaking:", text);
-
-        // Cancel ongoing speech before starting new one
-        speechSynthesis.cancel();
-
-        // Split the text into words for word-by-word highlighting
-        const words = text.split(" ");
-        let wordIndex = 0;
-
-        // Create a new SpeechSynthesisUtterance
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = document.getElementById("speed-slider").value; // Adjust speed
-
-        // If we have an element to highlight, we highlight each word
-        if (element) {
-          // Start speaking and highlight word by word
-          utterance.onboundary = function (event) {
-            if (event.name === "word") {
-              // Get the start and end indices of the current word
-              const startIndex = event.charIndex;
-              const endIndex = startIndex + event.charLength;
-
-              // Highlight the word in the text
-              highlightText(element, startIndex, endIndex);
-            }
-          };
+          speechSynthesis.speak(utterance);
+        } else {
+          console.error("Speech synthesis is not supported in this browser.");
         }
-
-        // Speak the text
-        speechSynthesis.speak(utterance);
-
-        utterance.onend = () => {
-          isPaused = false;
-          console.log("Speech finished.");
-        };
-
-        utterance.onerror = (e) => {
-          console.error("Speech error:", e);
-        };
-      } else {
-        console.log("Text-to-Speech is muted or unsupported.");
       }
-    }
 
-    function pauseSpeech() {
-      if (speechSynthesis.speaking && !isPaused) {
-        speechSynthesis.pause();
-        isPaused = true;
-      }
-    }
-
-    function resumeSpeech() {
-      if (isPaused) {
-        speechSynthesis.resume();
-        isPaused = false;
-      }
-    }
-
-    function moveBackward() {
-      if (currentSpeechIndex > 0) {
-        speechSynthesis.cancel();
-        currentSpeechIndex--;
-        const previousUtterance = speechQueue[currentSpeechIndex];
-        speechSynthesis.speak(previousUtterance);
-      }
-    }
-
-    function moveForward() {
-      if (currentSpeechIndex < speechQueue.length - 1) {
-        speechSynthesis.cancel();
-        currentSpeechIndex++;
-        const nextUtterance = speechQueue[currentSpeechIndex];
-        speechSynthesis.speak(nextUtterance);
-      }
-    }
-
-    document.getElementById("mute-toggle").addEventListener("change", function () {
-      isMute = !this.checked;
-    });
-
-    document.getElementById("send-btn").addEventListener("click", sendMessage);
-
-    function sendMessage() {
-      const userInput = document.getElementById("user-input").value.trim();
-      if (userInput) {
-        const chatBox = document.getElementById("chat-box");
-
-        const userMessage = document.createElement("div");
-        userMessage.classList.add("message", "user-message");
-        userMessage.textContent = userInput;
-        chatBox.appendChild(userMessage);
-
-        document.getElementById("user-input").value = "";
-
-        fetch("http://localhost:5001/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userInput }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            const botResponse = data.response;
-
-            const botMessage = document.createElement("div");
-            botMessage.classList.add("message", "bot-message");
-            botMessage.textContent = botResponse;
-
-            const micIcon = document.createElement("span");
-            micIcon.classList.add("mic-icon");
-            micIcon.innerHTML = "&#127909;";
-            micIcon.onclick = () => speakText(botResponse);
-            botMessage.appendChild(micIcon);
-
-            chatBox.appendChild(botMessage);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            if (!isMute) speakText(botResponse, botMessage);
+      function copyTextToClipboard(text, copyIcon) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const originalIcon = copyIcon.innerHTML; // Save the original icon
+            copyIcon.innerHTML = `
+              <path d="M9 16.17l-4.17-4.17-1.41 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />`; // Tick icon
+            setTimeout(() => {
+              copyIcon.innerHTML = originalIcon; // Restore the original icon after 5 seconds
+            }, 5000);
           })
-          .catch((error) => console.error("Error:", error));
+          .catch((err) => console.error("Error copying text:", err));
       }
-    }
-  </script>
-</body>
+
+      document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+      function sendMessage() {
+        const userInput = document.getElementById("user-input").value.trim();
+        if (userInput) {
+          const chatBox = document.getElementById("chat-box");
+
+          const userMessage = document.createElement("div");
+          userMessage.classList.add("message", "user-message");
+          userMessage.textContent = userInput;
+          chatBox.appendChild(userMessage);
+
+          document.getElementById("user-input").value = "";
+
+          fetch("http://localhost:5001/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userInput }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const botResponse = data.response;
+
+              const botMessage = document.createElement("div");
+              botMessage.classList.add("message", "bot-message");
+              botMessage.textContent = botResponse;
+
+              const iconContainer = document.createElement("div");
+              iconContainer.classList.add("icon-container");
+
+              // Mic Icon
+              const micIcon = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "svg"
+              );
+              micIcon.setAttribute("class", "icon");
+              micIcon.setAttribute("viewBox", "0 0 24 24");
+              micIcon.innerHTML = `
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.87 3.13 7 7 7v4h-2v2h6v-2h-2v-4c3.87 0 7-3.13 7-7h-2z" />`;
+              micIcon.onclick = () => speakText(botResponse);
+
+              // Copy Icon
+              const copyIcon = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "svg"
+              );
+              copyIcon.setAttribute("class", "icon");
+              copyIcon.setAttribute("viewBox", "0 0 24 24");
+              copyIcon.innerHTML = `
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`;
+              copyIcon.onclick = () => copyTextToClipboard(botResponse, copyIcon);
+
+              iconContainer.appendChild(micIcon);
+              iconContainer.appendChild(copyIcon);
+
+              chatBox.appendChild(botMessage);
+              chatBox.appendChild(iconContainer);
+              chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch((error) => console.error("Error:", error));
+        }
+      }
+    </script>
+  </body>
 </html>
