@@ -3,84 +3,91 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chatbot</title>
+    <title>Avatar Chat</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #6a11cb, #2575fc);
-        color: white;
         margin: 0;
-        padding: 0;
+        font-family: Arial, sans-serif;
         display: flex;
-        flex-direction: column;
         align-items: center;
-        height: 100vh;
         justify-content: center;
-      }
-
-      h1 {
-        font-size: 2.5rem;
-        margin-bottom: 20px;
+        height: 100vh;
+        background: url("img/bg.webp") no-repeat center center;
+        background-size: cover;
       }
 
       .chat-container {
-        background: #ffffff;
-        color: #333;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 90%;
-        max-width: 600px;
+        max-width: 800px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.2); /* Semi-transparent container */
+        backdrop-filter: blur(10px); /* Optional blur effect */
         display: flex;
         flex-direction: column;
-        align-items: center;
-        padding: 20px;
       }
 
       .chat-box {
-        width: 100%;
-        height: 400px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
+        height: 300px;
+        padding: 15px;
         overflow-y: auto;
-        background-color: #f9f9f9;
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.1); /* Semi-transparent chat box */
+        backdrop-filter: blur(5px); /* Optional blur effect */
+        color: #333;
       }
 
       .message {
         margin: 10px 0;
-        font-weight: bold;
-        display: block;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 70%;
       }
 
       .user-message {
-        text-align: right;
-        color: #2575fc;
+        align-self: flex-end;
+        background: rgba(36, 150, 255, 0.8);
+        color: white;
       }
 
       .bot-message {
-        text-align: left;
-        color: #6a11cb;
+        align-self: flex-start;
+        background: rgba(108, 71, 230, 0.8);
+        color: white;
       }
 
       .input-container {
-        margin-top: 10px;
-        width: 100%;
         display: flex;
+        border-top: 1px solid rgba(255, 255, 255, 0.5);
+        background: rgba(
+          255,
+          255,
+          255,
+          0.2
+        ); /* Semi-transparent input container */
+        backdrop-filter: blur(5px); /* Optional blur effect */
       }
 
       input[type="text"] {
         flex: 1;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px 0 0 5px;
+        padding: 15px;
         font-size: 1rem;
+        border: none;
+        outline: none;
+        background: transparent; /* Transparent input field */
+        color: white;
+      }
+
+      input[type="text"]::placeholder {
+        color: rgba(255, 255, 255, 0.7);
       }
 
       button {
-        padding: 10px 20px;
+        padding: 15px 20px;
         background: linear-gradient(135deg, #2575fc, #6a11cb);
         border: none;
-        border-radius: 0 5px 5px 0;
         color: white;
         font-size: 1rem;
         cursor: pointer;
@@ -90,22 +97,15 @@
       button:hover {
         background: linear-gradient(135deg, #6a11cb, #2575fc);
       }
-
-      button:active {
-        transform: scale(0.98);
-      }
     </style>
   </head>
   <body>
-    <h1>TriForce Chatbot</h1>
     <div class="chat-container">
-      <div class="chat-box" id="chat-box"></div>
+      <div class="chat-box" id="chat-box">
+        <div class="message bot-message">Hi! How can I assist you today?</div>
+      </div>
       <div class="input-container">
-        <input
-          type="text"
-          id="user-input"
-          placeholder="Type your message here"
-        />
+        <input type="text" id="user-input" placeholder="Type a message..." />
         <button onclick="sendMessage()">Send</button>
       </div>
     </div>
@@ -132,6 +132,5 @@
         }
       }
     </script>
-    //test
   </body>
 </html>
