@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Avatar Chat</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');  
       body {
         margin: 0;
-        font-family: Arial, sans-serif;
+        font-family: 'Lexend';
         display: flex;
         height: 100vh;
         background: url("img/chatbot bg.jpg") no-repeat center center;
@@ -41,7 +42,6 @@
         flex-direction: column;
         margin-top:10%;
       }
-
       .chat-box {
         position: relative;
         height: 500px;
@@ -50,28 +50,32 @@
         display: flex;
         flex-direction: column;
         color: #333;
-      }
-
-      .message {
+        font-size: 1.2rem; /* Adjust the font size for the chat box */
+    }
+    
+    .message {
         margin: 10px 0;
         padding: 10px 15px;
         border-radius: 10px;
         max-width: 70%;
         display: inline-block;
-      }
-
-      .user-message {
+        font-size: 1.2rem; /* Increase font size for messages */
+    }
+    
+    .user-message {
         align-self: flex-end;
         background: rgba(36, 150, 255, 0.8);
         color: white;
-      }
-
-      .bot-message {
+        font-size: 1.2rem; /* Increase font size for user messages */
+    }
+    
+    .bot-message {
         align-self: flex-start;
         background: rgba(108, 71, 230, 0.8);
         color: white;
         position: relative;
-      }
+        font-size: 1.2rem; /* Increase font size for bot messages */
+    }
 
       .icon-container {
         display: flex;
@@ -93,9 +97,9 @@
       }
       .bot-message .response-title {
         font-weight: bold;
-        font-size: 1rem;
+        font-size: 1.5rem; /* Larger font size for titles */
         margin-bottom: 5px;
-      }
+    }
 
       .bot-message .response-points {
         margin: 0;
@@ -103,9 +107,9 @@
       }
 
       .bot-message .response-points li {
-        list-style-type: disc;
+        font-size: 1.2rem; /* Adjust font size for bullet points */
         margin: 5px 0;
-      }
+    }
       .bot-message div {
         margin-bottom: 10px;
       }
