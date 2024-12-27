@@ -51,23 +51,14 @@
         display: flex;
         flex-direction: column;
         color: #333;
-        font-size: .7rem; /* Adjust the font size for the chat box */
-    }
-    
-    .message {
-        margin: 10px 0;
-        padding: 10px 15px;
-        border-radius: 10px;
-        max-width: 70%;
-        display: inline-block;
-        font-size: .7rem; /* Increase font size for messages */
+        font-size: 1rem; /* Adjust the font size for the chat box */
     }
     
     .user-message {
         align-self: flex-end;
         background: rgba(36, 150, 255, 0.8);
         color: white;
-        font-size: .7rem; /* Increase font size for user messages */
+        font-size: 1rem; /* Increase font size for user messages */
     }
     
     .bot-message {
@@ -75,27 +66,39 @@
         background: rgba(108, 71, 230, 0.8);
         color: white;
         position: relative;
-        font-size: .7rem; /* Increase font size for bot messages */
+        font-size: 1rem; /* Increase font size for bot messages */
     }
 
-      .icon-container {
-        display: flex;
-        margin-left: 20%;
-        gap: 20px;
-      }
+    .message {
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 70%;
+      display: inline-block;
+      font-size: 1rem;
+      position: relative; /* Keep relative positioning */
+    }
 
-      .icon {
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        fill: black;
-        transition: transform 0.2s, fill 0.2s;
-      }
+    .icon-container {
+      display: inline-flex; /* Inline with the text */
+      gap: 10px;
+      margin-left: 10px; /* Space between the text and icons */
+      vertical-align: middle; /* Align icons with the text */
+    }
 
-      .icon:hover {
-        fill: #ffd700;
-        transform: scale(1.2);
-      }
+    .icon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      fill: black;
+      transition: transform 0.2s, fill 0.2s;
+    }
+
+    .icon:hover {
+      fill: #ffd700;
+      transform: scale(1.2);
+    }
+
       .bot-message .response-title {
         font-weight: bold;
         font-size: 1rem; /* Larger font size for titles */
@@ -108,7 +111,7 @@
       }
 
       .bot-message .response-points li {
-        font-size: .7rem; /* Adjust font size for bullet points */
+        font-size: 1rem; /* Adjust font size for bullet points */
         margin: 5px 0;
     }
       .bot-message div {
@@ -120,7 +123,6 @@
         list-style-type: disc;
       }
 
-
       .input-container {
         display: flex;
         border-top: 1px solid rgba(0, 0, 0, 0.2);
@@ -130,7 +132,7 @@
       input[type="text"] {
         flex: 1;
         padding: 15px;
-        font-size: .7rem;
+        font-size: 1rem;
         border: none;
         outline: none;
         border-radius: 10px;
@@ -141,23 +143,28 @@
         background: linear-gradient(135deg, #2575fc, #6a11cb);
         border: none;
         color: white;
-        font-size: .7rem;
+        font-size: 1rem;
         cursor: pointer;
         border-radius: 5px;
       }
 
-      .speed-control {
-        margin: 10px;
-        text-align: center;
+      .speak-button {
+        background-color: #ff9e00;
+        width: 100px;
+        height: 50px;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-left: 10px;
+        border: none;
       }
-
-      .speed-label {
-        font-size: 0.9rem;
-        margin-right: 10px;
-      }
-
-      .speed-slider {
-        width: 50%;
+      
+      .speak-button svg {
+        fill: white;
+        width: 30px;
+        height: 30px;
       }
     </style>
   </head>
@@ -175,63 +182,63 @@
         <div class="input-container">
           <input type="text" id="user-input" placeholder="Type a message..." />
           <button id="send-btn">Send</button>
+          <!-- Microphone button -->
+          <button class="speak-button" id="mic-btn">🎙️</button>
         </div>
       </div>
     </div>
+
     <script type="module" src="js/avator.js"></script>
     <script type="module" src="js/copy.js"></script>
     <script type="module" src="js/send_message.js"></script>
+    <script type="module" src="js/speechtotext.js"></script>
+
     <script>
-      let isSpeaking = false; // Track if speech synthesis is active
-      let isPaused = false; // Track if speech synthesis is paused
-      let utterance; // Reference to the speech utterance
-  function toggleSpeech(text, icon) {
-        if ("speechSynthesis" in window) {
-          // Resume if paused
-          if (isPaused) {
-            speechSynthesis.resume();
-            icon.innerHTML = `
-              <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
-            isPaused = false;
-          }
-          // Pause if currently speaking
-          else if (isSpeaking) {
-            speechSynthesis.pause();
-            icon.innerHTML = `
-               <path d="M3 10v4h4l5 5V5L7 10H3zm16.59 3.41L19 14l-4-4 1.41-1.41L19 12.59l2.59-2.59L23 10l-4 4z" />`; // Muted speaker icon
-            isPaused = true;
-          }
-          // Start speaking
-          else {
-            utterance = new SpeechSynthesisUtterance(text);
-    
-            // Get speech speed from slider, default to 1 if not found
-            const speechSpeed = document.getElementById("speed-slider")?.value || 1;
-            utterance.rate = speechSpeed;
-    
-            try {
-              speechSynthesis.speak(utterance);
-              isSpeaking = true;
-              isPaused = false;
-    
-              icon.innerHTML = `
-                <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
-    
-              utterance.onend = () => {
-                isSpeaking = false;
-                isPaused = false;
-                icon.innerHTML = `
-                  <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Reset to default icon
-              };
-            } catch (error) {
-              console.error("Error with speech synthesis:", error);
-            }
-          }
-        } else {
-          console.error("Speech synthesis is not supported in this browser.");
-        }
+      // Microphone to text functionality
+      function startSpeechRecognition() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US"; // You can change this based on the language
+        recognition.start();
+
+        recognition.onresult = function (event) {
+          const query = event.results[0][0].transcript;
+          document.getElementById("user-input").value = query;
+          console.log("Recognized: " + query);
+        };
       }
+
+      // Button to start speech recognition
+      document.getElementById("mic-btn").addEventListener("click", startSpeechRecognition);
+
+      // Handle sending user messages and generating bot responses
+      document.getElementById("send-btn").addEventListener("click", () => {
+        const userInput = document.getElementById("user-input").value;
+        if (userInput) {
+          // Display the user message
+          const chatBox = document.getElementById("chat-box");
+          const userMessageDiv = document.createElement("div");
+          userMessageDiv.classList.add("message", "user-message");
+          userMessageDiv.textContent = userInput;
+          chatBox.appendChild(userMessageDiv);
+          
+          // Clear the input field after sending the message
+          document.getElementById("user-input").value = "";
+
+          // Simulate bot response (You can replace this with actual API logic)
+          setTimeout(() => {
+            const botResponse = "I'm still learning! But I can help with your queries.";  // Static response (replace with actual logic)
+            
+            // Display bot message
+            const botMessageDiv = document.createElement("div");
+            botMessageDiv.classList.add("message", "bot-message");
+            botMessageDiv.textContent = botResponse;
+            chatBox.appendChild(botMessageDiv);
+
+            // Scroll to the bottom of the chat
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }, 1000);
+        }
+      });
     </script>
-    
   </body>
 </html>
