@@ -51,23 +51,14 @@
         display: flex;
         flex-direction: column;
         color: #333;
-        font-size: .7rem; /* Adjust the font size for the chat box */
-    }
-    
-    .message {
-        margin: 10px 0;
-        padding: 10px 15px;
-        border-radius: 10px;
-        max-width: 70%;
-        display: inline-block;
-        font-size: .7rem; /* Increase font size for messages */
+        font-size: 1rem; /* Adjust the font size for the chat box */
     }
     
     .user-message {
         align-self: flex-end;
         background: rgba(36, 150, 255, 0.8);
         color: white;
-        font-size: .7rem; /* Increase font size for user messages */
+        font-size: 1rem; /* Increase font size for user messages */
     }
     
     .bot-message {
@@ -75,27 +66,40 @@
         background: rgba(108, 71, 230, 0.8);
         color: white;
         position: relative;
-        font-size: .7rem; /* Increase font size for bot messages */
+        font-size: 1rem; /* Increase font size for bot messages */
     }
 
-      .icon-container {
-        display: flex;
-        margin-left: 20%;
-        gap: 20px;
-      }
+    .message {
+  margin: 10px 0;
+  padding: 10px 15px;
+  border-radius: 10px;
+  max-width: 70%;
+  display: inline-block;
+  font-size: 1rem;
+  position: relative; /* Keep relative positioning */
+}
 
-      .icon {
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        fill: black;
-        transition: transform 0.2s, fill 0.2s;
-      }
+.icon-container {
+  display: inline-flex; /* Inline with the text */
+  gap: 10px;
+  margin-left: 10px; /* Space between the text and icons */
+  vertical-align: middle; /* Align icons with the text */
+}
 
-      .icon:hover {
-        fill: #ffd700;
-        transform: scale(1.2);
-      }
+.icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  fill: black;
+  transition: transform 0.2s, fill 0.2s;
+}
+
+.icon:hover {
+  fill: #ffd700;
+  transform: scale(1.2);
+}
+
+
       .bot-message .response-title {
         font-weight: bold;
         font-size: 1rem; /* Larger font size for titles */
@@ -108,7 +112,7 @@
       }
 
       .bot-message .response-points li {
-        font-size: .7rem; /* Adjust font size for bullet points */
+        font-size: 1rem; /* Adjust font size for bullet points */
         margin: 5px 0;
     }
       .bot-message div {
@@ -130,7 +134,7 @@
       input[type="text"] {
         flex: 1;
         padding: 15px;
-        font-size: .7rem;
+        font-size: 1rem;
         border: none;
         outline: none;
         border-radius: 10px;
@@ -141,7 +145,7 @@
         background: linear-gradient(135deg, #2575fc, #6a11cb);
         border: none;
         color: white;
-        font-size: .7rem;
+        font-size: 1rem;
         cursor: pointer;
         border-radius: 5px;
       }
@@ -152,7 +156,7 @@
       }
 
       .speed-label {
-        font-size: 0.9rem;
+        font-size: 1rem;
         margin-right: 10px;
       }
 
