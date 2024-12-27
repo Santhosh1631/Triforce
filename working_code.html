@@ -178,69 +178,13 @@
     </div>
     <script type="module" src="script.js"></script>
     <script>
-        let isSpeaking = false; // Track if speech synthesis is active
-        let isPaused = false; // Track if speech synthesis is paused
-        let utterance; // Reference to the speech utterance
-
-        6
-        6
-
-
-
-        function toggleSpeech(text, icon) {
-            if ("speechSynthesis" in window) {
-                // Resume if paused
-                if (isPaused) {
-                    speechSynthesis.resume();
-                    icon.innerHTML = `
-              <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
-                    isPaused = false;
-                }
-                // Pause if currently speaking
-                else if (isSpeaking) {
-                    speechSynthesis.pause();
-                    icon.innerHTML = `
-               <path d="M3 10v4h4l5 5V5L7 10H3zm16.59 3.41L19 14l-4-4 1.41-1.41L19 12.59l2.59-2.59L23 10l-4 4z" />`; // Muted speaker icon
-                    isPaused = true;
-                }
-                // Start speaking
-                else {
-                    utterance = new SpeechSynthesisUtterance(text);
-
-                    // Get speech speed from slider, default to 1 if not found
-                    const speechSpeed = document.getElementById("speed-slider") ? .value || 1;
-                    utterance.rate = speechSpeed;
-
-                    try {
-                        speechSynthesis.speak(utterance);
-                        isSpeaking = true;
-                        isPaused = false;
-
-                        icon.innerHTML = `
-                <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
-
-                        utterance.onend = () => {
-                            isSpeaking = false;
-                            isPaused = false;
-                            icon.innerHTML = `
-                  <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Reset to default icon
-                        };
-                    } catch (error) {
-                        console.error("Error with speech synthesis:", error);
-                    }
-                }
-            } else {
-                console.error("Speech synthesis is not supported in this browser.");
-            }
-        }
-
         function copyTextToClipboard(text, copyIcon) {
             navigator.clipboard
                 .writeText(text)
                 .then(() => {
                     const originalIcon = copyIcon.innerHTML; // Save the original icon
                     copyIcon.innerHTML = `
-              <path d="M9 16.17l-4.17-4.17-1.41 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />`; // Tick icon
+                  <path d="M9 16.17l-4.17-4.17-1.41 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />`; // Tick icon
                     setTimeout(() => {
                         copyIcon.innerHTML = originalIcon; // Restore the original icon after 5 seconds
                     }, 5000);
@@ -249,6 +193,12 @@
         }
 
         document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+        document.getElementById("user-input").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
 
         function sendMessage() {
             const userInput = document.getElementById("user-input").value.trim();
@@ -340,7 +290,7 @@
                         micIcon.setAttribute("class", "icon");
                         micIcon.setAttribute("viewBox", "0 0 24 24");
                         micIcon.innerHTML = `
-                <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`;
+                    <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`;
                         micIcon.onclick = () => toggleSpeech(botResponse, micIcon);
 
                         // Copy Icon
@@ -351,7 +301,7 @@
                         copyIcon.setAttribute("class", "icon");
                         copyIcon.setAttribute("viewBox", "0 0 24 24");
                         copyIcon.innerHTML = `
-                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`;
+                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`;
                         copyIcon.onclick = () => copyTextToClipboard(botResponse, copyIcon);
 
                         iconContainer.appendChild(micIcon);
@@ -362,6 +312,109 @@
                     })
                     .catch((error) => console.error("Error:", error));
             }
+        }
+
+        function startSpeechRecognition() {
+            const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "en-US"; // You can change the language
+            recognition.start();
+            recognition.onresult = function(event) {
+                const query = event.results[0][0].transcript;
+                document.getElementById("user-input").value = query; // Put the recognized text in the input box
+                console.log("Recognized: " + query);
+            };
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error", event.error);
+            };
+        }
+        // Button to start speech recognition
+        document.getElementById("mic-btn").addEventListener("click", startSpeechRecognition);
+        // Handle sending user messages and generating bot responses
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+        let isSpeaking = false; // Flag to track if speech is currently playing
+        let isPaused = false; // Flag to track if speech is paused
+        let utterance = null; // Holds the current speech synthesis utterance
+        function toggleSpeech(text, icon) {
+            if ("speechSynthesis" in window) {
+                // Resume if paused
+                if (isPaused) {
+                    speechSynthesis.resume();
+                    icon.innerHTML = `
+                  <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
+                    isPaused = false;
+                }
+                // Pause if currently speaking
+                else if (isSpeaking) {
+                    speechSynthesis.pause();
+                    icon.innerHTML = `
+                  <path d="M3 10v4h4l5 5V5L7 10H3zm16.59 3.41L19 14l-4-4 1.41-1.41L19 12.59l2.59-2.59L23 10l-4 4z" />`; // Muted speaker icon
+                    isPaused = true;
+                }
+                // Start speaking
+                else {
+                    utterance = new SpeechSynthesisUtterance(text);
+
+                    // Get speech speed from slider, default to 1 if not found
+                    const speechSpeedSlider = document.getElementById("speed-slider");
+                    const speechSpeed = speechSpeedSlider ? speechSpeedSlider.value : 1;
+                    utterance.rate = speechSpeed;
+
+                    try {
+                        speechSynthesis.speak(utterance);
+                        isSpeaking = true;
+                        isPaused = false;
+
+                        icon.innerHTML = `
+                    <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
+
+                        utterance.onend = () => {
+                            isSpeaking = false;
+                            isPaused = false;
+                            icon.innerHTML = `
+                      <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Reset to default icon
+                        };
+                    } catch (error) {
+                        console.error("Error with speech synthesis:", error);
+                    }
+                }
+            } else {
+                console.error("Speech synthesis is not supported in this browser.");
+            }
+        }
+        // Check if the browser supports speech recognition
+        if ("webkitSpeechRecognition" in window) {
+            // Initialize the speech recognition object
+            const recognition = new webkitSpeechRecognition();
+
+            // Set language for recognition
+            recognition.lang = "en-US"; // You can change this to another language if needed
+            recognition.continuous = false; // Stop recognition after one phrase
+            recognition.interimResults = false; // Don't show interim results
+
+            // When the speech recognition result is available
+            recognition.onresult = (event) => {
+                // Get the recognized text (first result from the speech recognition)
+                const userInput = event.results[0][0].transcript;
+
+                // Set the text input to the recognized text
+                document.getElementById("user-input").value = userInput;
+
+                // Optionally, automatically send the message after recognition
+                document.getElementById("send-btn").click();
+            };
+
+            // Handle any errors that occur during speech recognition
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+            };
+
+            // Start speech recognition when the microphone button is clicked
+            document.getElementById("mike-btn").addEventListener("click", () => {
+                recognition.start(); // Start the speech recognition
+            });
+        } else {
+            console.error("Speech recognition is not supported in this browser.");
         }
     </script>
 
