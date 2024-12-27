@@ -129,3 +129,71 @@ function sendMessage() {
       .catch((error) => console.error("Error:", error));
   }
 }
+function startSpeechRecognition() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";  // You can change the language
+  recognition.start();
+  recognition.onresult = function (event) {
+    const query = event.results[0][0].transcript;
+    document.getElementById("user-input").value = query;  // Put the recognized text in the input box
+    console.log("Recognized: " + query);
+  };
+  recognition.onerror = function (event) {
+    console.error("Speech recognition error", event.error);
+  };
+}
+// Button to start speech recognition
+document.getElementById("mic-btn").addEventListener("click", startSpeechRecognition);
+// Handle sending user messages and generating bot responses
+document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+let isSpeaking = false;  // Flag to track if speech is currently playing
+let isPaused = false;    // Flag to track if speech is paused
+let utterance = null;    // Holds the current speech synthesis utterance
+function toggleSpeech(text, icon) {
+  if ("speechSynthesis" in window) {
+    // Resume if paused
+    if (isPaused) {
+      speechSynthesis.resume();
+      icon.innerHTML = `
+        <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
+      isPaused = false;
+    }
+    // Pause if currently speaking
+    else if (isSpeaking) {
+      speechSynthesis.pause();
+      icon.innerHTML = `
+        <path d="M3 10v4h4l5 5V5L7 10H3zm16.59 3.41L19 14l-4-4 1.41-1.41L19 12.59l2.59-2.59L23 10l-4 4z" />`; // Muted speaker icon
+      isPaused = true;
+    }
+    // Start speaking
+    else {
+      utterance = new SpeechSynthesisUtterance(text);
+
+      // Get speech speed from slider, default to 1 if not found
+      const speechSpeedSlider = document.getElementById("speed-slider");
+      const speechSpeed = speechSpeedSlider ? speechSpeedSlider.value : 1;
+      utterance.rate = speechSpeed;
+
+      try {
+        speechSynthesis.speak(utterance);
+        isSpeaking = true;
+        isPaused = false;
+
+        icon.innerHTML = `
+          <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
+
+        utterance.onend = () => {
+          isSpeaking = false;
+          isPaused = false;
+          icon.innerHTML = `
+            <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Reset to default icon
+        };
+      } catch (error) {
+        console.error("Error with speech synthesis:", error);
+      }
+    }
+  } else {
+    console.error("Speech synthesis is not supported in this browser.");
+  }
+}
