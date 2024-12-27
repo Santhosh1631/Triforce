@@ -70,6 +70,7 @@
     }
 
     .message {
+<<<<<<< HEAD
       margin: 10px 0;
       padding: 10px 15px;
       border-radius: 10px;
@@ -98,6 +99,37 @@
       fill: #ffd700;
       transform: scale(1.2);
     }
+=======
+  margin: 10px 0;
+  padding: 10px 15px;
+  border-radius: 10px;
+  max-width: 70%;
+  display: inline-block;
+  font-size: 1rem;
+  position: relative; /* Keep relative positioning */
+}
+
+.icon-container {
+  display: inline-flex; /* Inline with the text */
+  gap: 10px;
+  margin-left: 10px; /* Space between the text and icons */
+  vertical-align: middle; /* Align icons with the text */
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  fill: black;
+  transition: transform 0.2s, fill 0.2s;
+}
+
+.icon:hover {
+  fill: #ffd700;
+  transform: scale(1.2);
+}
+
+>>>>>>> 06a9198658ea24468538412a67eb70329ffa6fd0
 
       .bot-message .response-title {
         font-weight: bold;
@@ -160,11 +192,22 @@
         margin-left: 10px;
         border: none;
       }
+<<<<<<< HEAD
       
       .speak-button svg {
         fill: white;
         width: 30px;
         height: 30px;
+=======
+
+      .speed-label {
+        font-size: 1rem;
+        margin-right: 10px;
+      }
+
+      .speed-slider {
+        width: 50%;
+>>>>>>> 06a9198658ea24468538412a67eb70329ffa6fd0
       }
     </style>
   </head>
