@@ -147,25 +147,40 @@
         cursor: pointer;
         border-radius: 5px;
       }
-
       .speak-button {
-        background-color: #ff9e00;
-        width: 100px;
-        height: 50px;
-        border-radius: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        margin-left: 10px;
-        border: none;
-      }
-      
-      .speak-button svg {
-        fill: white;
-        width: 30px;
-        height: 30px;
-      }
+  background-color: #ff9e00;
+  width: 100px;
+  height: 50px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 10px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.speak-button svg {
+  fill: white;
+  width: 30px;
+  height: 30px;
+}
+
+.speak-button:active {
+  background-color: #e58c00; /* Darker shade when clicked */
+}
+
+.highlighted-text span {
+  display: inline-block;
+  padding: 0 2px;
+  transition: background-color 0.3s ease;
+}
+
+.highlighted-text span:hover {
+  background-color: lightyellow;
+}
+
     </style>
   </head>
   <body>
@@ -191,6 +206,8 @@
     <script type="module" src="js/avator.js"></script>
     <script type="module" src="js/send_message.js"></script>
     <script type="module" src="js/speechtotext.js"></script>
+    <script src="speechHighlight.js"></script>
+
 
     <script>
 
