@@ -101,7 +101,7 @@
 
       .bot-message .response-title {
         font-weight: bold;
-        font-size: 1rem; /* Larger font size for titles */
+        font-size: 1.1rem; /* Larger font size for titles */
         margin-bottom: 5px;
     }
 
@@ -170,16 +170,43 @@
 .speak-button:active {
   background-color: #e58c00; /* Darker shade when clicked */
 }
+#highlight-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      background-color: #4CAF50; /* Green */
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
 
-.highlighted-text span {
-  display: inline-block;
-  padding: 0 2px;
-  transition: background-color 0.3s ease;
-}
+    #highlight-button:hover {
+      background-color: #45a049;
+    }
 
-.highlighted-text span:hover {
-  background-color: lightyellow;
-}
+    /* Styling for the container holding bot's response */
+    #bot-response-container {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      max-width: 600px;
+      word-wrap: break-word;
+    }
+
+    /* Basic styling for individual words */
+    .word {
+      display: inline-block;
+      font-size: 18px;
+      margin-right: 5px;
+    }
+
+    /* Highlighted word styling */
+    .highlight {
+      background-color: yellow;  /* Highlight with yellow background */
+      font-weight: bold;         /* Make the word bold */
+    }
 
     </style>
   </head>
@@ -191,7 +218,11 @@
       <div class="chat-container">
         <div class="chat-box" id="chat-box" type="text">
           <div class="message bot-message">
-            Hi! How can I assist you today?
+            <div class="response-title">Hi! How can I assist you today?</div>
+            <ul class="response-points">
+              <li>Option 1: Ask for assistance</li>
+              <li>Option 2: Learn more about the chatbot</li>
+            </ul>
           </div>
         </div>
         <div class="input-container">
@@ -199,6 +230,7 @@
           <button id="send-btn">Send</button>
           <!-- Microphone button -->
           <button class="speak-button" id="mic-btn">🎙️</button>
+          <button id="highlight-button">Start Highlighting</button>
         </div>
       </div>
     </div>
@@ -206,11 +238,7 @@
     <script type="module" src="js/avator.js"></script>
     <script type="module" src="js/send_message.js"></script>
     <script type="module" src="js/speechtotext.js"></script>
-    <script src="speechHighlight.js"></script>
-
-
-    <script>
-
-    </script>
+    <!-- Link to the highlight.js file -->
+    <script src="highlight.js"></script>
   </body>
 </html>
