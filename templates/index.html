@@ -11,28 +11,29 @@
         font-family: 'Lexend';
         display: flex;
         height: 100vh;
+        overflow: hidden;
         background: url("img/chatbot bg.jpg") no-repeat center center;
         background-size: cover;
         color: #000000;
       }
-
+      
       .main-container {
         display: flex;
         width: 100%;
         height: 100%;
       }
-
+      
       .avatar-container {
         width: 30%;
         display: flex;
       }
       
       #container3D {
-        margin-left:-110%;
+        margin-left: -110%;
         width: 100%;
         height: 100%;
       }
-
+      
       .chat-container {
         width: 90%;
         max-width: 800px;
@@ -40,9 +41,10 @@
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        margin-top:10%;
-        margin-bottom:7%;
+        margin-top: 6%;
+        margin-bottom: 6%;
       }
+      
       .chat-box {
         position: relative;
         height: 500px;
@@ -52,83 +54,103 @@
         flex-direction: column;
         color: #333;
         font-size: 1rem; /* Adjust the font size for the chat box */
-    }
-    
-    .user-message {
+      }
+      
+      /* Custom scrollbar styles */
+      .chat-box::-webkit-scrollbar {
+        width: 8px; /* Adjust width of the scrollbar */
+      }
+      
+      .chat-box::-webkit-scrollbar-track {
+        background: transparent; /* Transparent track */
+      }
+      
+      .chat-box::-webkit-scrollbar-thumb {
+        background-color: rgba(108, 71, 230, 0.8); /* Thumb color */
+        border-radius: 10px; /* Rounded corners */
+      }
+      
+      .chat-box::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(36, 150, 255, 0.8); /* Brighter thumb on hover */
+      }
+      
+      .user-message {
+        padding-top: 10px;
         align-self: flex-end;
         background: rgba(36, 150, 255, 0.8);
         color: white;
         font-size: 1rem; /* Increase font size for user messages */
-    }
-    
-    .bot-message {
+      }
+      
+      .bot-message {
+        padding-top: 20px;
         align-self: flex-start;
         background: rgba(108, 71, 230, 0.8);
         color: white;
         position: relative;
         font-size: 1rem; /* Increase font size for bot messages */
-    }
-
-    .message {
-      margin: 10px 0;
-      padding: 10px 15px;
-      border-radius: 10px;
-      max-width: 70%;
-      display: inline-block;
-      font-size: 1rem;
-      position: relative; /* Keep relative positioning */
-    }
-
-    .icon-container {
-      display: inline-flex; /* Inline with the text */
-      gap: 10px;
-      margin-left: 10px; /* Space between the text and icons */
-      vertical-align: middle; /* Align icons with the text */
-    }
-
-    .icon {
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      fill: black;
-      transition: transform 0.2s, fill 0.2s;
-    }
-
-    .icon:hover {
-      fill: #ffd700;
-      transform: scale(1.2);
-    }
-
+      }
+      
+      .message {
+        margin: 10px 0;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 70%;
+        display: inline-block;
+        font-size: 1rem;
+        position: relative; /* Keep relative positioning */
+      }
+      
+      .icon-container {
+        display: inline-flex; /* Inline with the text */
+        gap: 10px;
+        margin-left: 10px; /* Space between the text and icons */
+        vertical-align: middle; /* Align icons with the text */
+      }
+      
+      .icon {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        fill: black;
+        transition: transform 0.2s, fill 0.2s;
+      }
+      
+      .icon:hover {
+        fill: #ffd700;
+        transform: scale(1.2);
+      }
+      
       .bot-message .response-title {
         font-weight: bold;
         font-size: 1.1rem; /* Larger font size for titles */
         margin-bottom: 5px;
-    }
-
+      }
+      
       .bot-message .response-points {
         margin: 0;
         padding-left: 15px;
       }
-
+      
       .bot-message .response-points li {
         font-size: 1rem; /* Adjust font size for bullet points */
         margin: 5px 0;
-    }
+      }
+      
       .bot-message div {
         margin-bottom: 10px;
       }
-
+      
       .bot-message ul {
         padding-left: 20px;
         list-style-type: disc;
       }
-
+      
       .input-container {
         display: flex;
-        border-top: 1px solid rgba(0, 0, 0, 0.2);
         border-radius: 10px;
       }
-
+      
       input[type="text"] {
         flex: 1;
         padding: 15px;
@@ -137,7 +159,7 @@
         outline: none;
         border-radius: 10px;
       }
-
+      
       button {
         padding: 15px 20px;
         background: linear-gradient(135deg, #2575fc, #6a11cb);
@@ -147,66 +169,55 @@
         cursor: pointer;
         border-radius: 5px;
       }
+      
       .speak-button {
-  background-color: #ff9e00;
-  width: 100px;
-  height: 50px;
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-left: 10px;
-  border: none;
-  transition: background-color 0.3s ease;
-}
-
-.speak-button svg {
-  fill: white;
-  width: 30px;
-  height: 30px;
-}
-
-.speak-button:active {
-  background-color: #e58c00; /* Darker shade when clicked */
-}
-#highlight-button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-bottom: 20px;
-      background-color: #4CAF50; /* Green */
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-
-    #highlight-button:hover {
-      background-color: #45a049;
-    }
-
-    /* Styling for the container holding bot's response */
-    #bot-response-container {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      max-width: 600px;
-      word-wrap: break-word;
-    }
-
-    /* Basic styling for individual words */
-    .word {
-      display: inline-block;
-      font-size: 18px;
-      margin-right: 5px;
-    }
-
-    /* Highlighted word styling */
-    .highlight {
-      background-color: yellow;  /* Highlight with yellow background */
-      font-weight: bold;         /* Make the word bold */
-    }
+        background-color: #ff9e00;
+        width: 20px;
+        height: 50px;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-left: 10px;
+        margin-right: 10px;
+        border: none;
+        transition: background-color 0.3s ease;
+      }
+      
+      .speak-button svg {
+        fill: white;
+        width: 50px;
+        height: 50px;
+      }
+      
+      .speak-button:active {
+        background-color: #e58c00; /* Darker shade when clicked */
+      }
+      
+      /* Styling for the container holding bot's response */
+      #bot-response-container {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        max-width: 600px;
+        word-wrap: break-word;
+      }
+      
+      /* Basic styling for individual words */
+      .word {
+        display: inline-block;
+        font-size: 18px;
+        margin-right: 5px;
+      }
+      
+      /* Highlighted word styling */
+      .highlight {
+        background-color: yellow;  /* Highlight with yellow background */
+        font-weight: bold;         /* Make the word bold */
+      }
+      
 
     </style>
   </head>
@@ -226,11 +237,9 @@
           </div>
         </div>
         <div class="input-container">
-          <input type="text" id="user-input" placeholder="Type a message..." />
-          <button id="send-btn">Send</button>
-          <!-- Microphone button -->
+          <input type="text" id="user-input" placeholder="Ask Something..." />
           <button class="speak-button" id="mic-btn">🎙️</button>
-          <button id="highlight-button">Start Highlighting</button>
+          <button id="send-btn">Send</button>
         </div>
       </div>
     </div>
@@ -238,7 +247,6 @@
     <script type="module" src="js/avator.js"></script>
     <script type="module" src="js/send_message.js"></script>
     <script type="module" src="js/speechtotext.js"></script>
-    <!-- Link to the highlight.js file -->
     <script src="highlight.js"></script>
   </body>
 </html>
