@@ -1,252 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Avatar Chat</title>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');  
-      body {
-        margin: 0;
-        font-family: 'Lexend';
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-        background: url("img/chatbot bg.jpg") no-repeat center center;
-        background-size: cover;
-        color: #000000;
-      }
-      
-      .main-container {
-        display: flex;
-        width: 100%;
-        height: 100%;
-      }
-      
-      .avatar-container {
-        width: 30%;
-        display: flex;
-      }
-      
-      #container3D {
-        margin-left: -110%;
-        width: 100%;
-        height: 100%;
-      }
-      
-      .chat-container {
-        width: 90%;
-        max-width: 800px;
-        border-radius: 15px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        margin-top: 6%;
-        margin-bottom: 6%;
-      }
-      
-      .chat-box {
-        position: relative;
-        height: 500px;
-        padding: 15px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        color: #333;
-        font-size: 1rem; /* Adjust the font size for the chat box */
-      }
-      
-      /* Custom scrollbar styles */
-      .chat-box::-webkit-scrollbar {
-        width: 8px; /* Adjust width of the scrollbar */
-      }
-      
-      .chat-box::-webkit-scrollbar-track {
-        background: transparent; /* Transparent track */
-      }
-      
-      .chat-box::-webkit-scrollbar-thumb {
-        background-color: rgba(108, 71, 230, 0.8); /* Thumb color */
-        border-radius: 10px; /* Rounded corners */
-      }
-      
-      .chat-box::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(36, 150, 255, 0.8); /* Brighter thumb on hover */
-      }
-      
-      .user-message {
-        padding-top: 10px;
-        align-self: flex-end;
-        background: rgba(36, 150, 255, 0.8);
-        color: white;
-        font-size: 1rem; /* Increase font size for user messages */
-      }
-      
-      .bot-message {
-        padding-top: 20px;
-        align-self: flex-start;
-        background: rgba(108, 71, 230, 0.8);
-        color: white;
-        position: relative;
-        font-size: 1rem; /* Increase font size for bot messages */
-      }
-      
-      .message {
-        margin: 10px 0;
-        padding: 10px 15px;
-        border-radius: 10px;
-        max-width: 70%;
-        display: inline-block;
-        font-size: 1rem;
-        position: relative; /* Keep relative positioning */
-      }
-      
-      .icon-container {
-        display: inline-flex; /* Inline with the text */
-        gap: 10px;
-        margin-left: 10px; /* Space between the text and icons */
-        vertical-align: middle; /* Align icons with the text */
-      }
-      
-      .icon {
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        fill: black;
-        transition: transform 0.2s, fill 0.2s;
-      }
-      
-      .icon:hover {
-        fill: #ffd700;
-        transform: scale(1.2);
-      }
-      
-      .bot-message .response-title {
-        font-weight: bold;
-        font-size: 1.1rem; /* Larger font size for titles */
-        margin-bottom: 5px;
-      }
-      
-      .bot-message .response-points {
-        margin: 0;
-        padding-left: 15px;
-      }
-      
-      .bot-message .response-points li {
-        font-size: 1rem; /* Adjust font size for bullet points */
-        margin: 5px 0;
-      }
-      
-      .bot-message div {
-        margin-bottom: 10px;
-      }
-      
-      .bot-message ul {
-        padding-left: 20px;
-        list-style-type: disc;
-      }
-      
-      .input-container {
-        padding-top:20px;
-        display: flex;
-        border-radius: 10px;
-      }
-      
-      input[type="text"] {
-        flex: 1;
-        padding: 15px;
-        font-size: 1rem;
-        border: none;
-        outline: none;
-        border-radius: 10px;
-      }
-      
-      button {
-        padding: 15px 20px;
-        background: linear-gradient(135deg, #2575fc, #6a11cb);
-        border: none;
-        color: white;
-        font-size: 1rem;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-      
-      .speak-button {
-        background-color: #ff9e00;
-        width: 20px;
-        height: 50px;
-        border-radius: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        margin-left: 10px;
-        margin-right: 10px;
-        border: none;
-        transition: background-color 0.3s ease;
-      }
-      
-      .speak-button svg {
-        fill: white;
-        width: 50px;
-        height: 50px;
-      }
-      
-      .speak-button:active {
-        background-color: #e58c00; /* Darker shade when clicked */
-      }
-      
-      /* Styling for the container holding bot's response */
-      #bot-response-container {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        max-width: 600px;
-        word-wrap: break-word;
-      }
-      
-      /* Basic styling for individual words */
-      .word {
-        display: inline-block;
-        font-size: 18px;
-        margin-right: 5px;
-      }
-      
-      /* Highlighted word styling */
-      .highlight {
-        background-color: yellow;  /* Highlight with yellow background */
-        font-weight: bold;         /* Make the word bold */
-      }
-      
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avatar Chat with Sidebar</title>
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="static/styles.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
 
-    </style>
-  </head>
-  <body>
-    <div class="main-container">
-      <div class="avatar-container">
-        <div id="container3D"></div>
-      </div>
-      <div class="chat-container">
-        <div class="chat-box" id="chat-box" type="text">
-          <div class="message bot-message">
-            <div class="response-title">Hi! How can I assist you today?</div>
-            <ul class="response-points">
-              <li>Option 1: Ask for assistance</li>
-              <li>Option 2: Learn more about the chatbot</li>
-            </ul>
-          </div>
-        </div>
-        <div class="input-container">
-          <input type="text" id="user-input" placeholder="Ask Something..." />
-          <button class="speak-button" id="mic-btn">🎙️</button>
-          <button id="send-btn">Send</button>
-        </div>
-      </div>
+    body {
+      margin: 0;
+      font-family: 'Lexend', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background: url("img/chatbot bg.jpg") no-repeat center center;
+      background-size: cover;
+      color: #000000;
+    }
+
+    /* Main layout with avatar and chat */
+    .main-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    .avatar-container {
+      width: 30%;
+      display: flex;
+    }
+
+    .chat-container {
+      width: 66%; /* Adjusting for sidebar width */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 60px; /* Initial collapsed width */
+      background-color: rgba(255, 255, 255, 0);
+      color: black;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    }
+    /* Sidebar icons */
+    .sidebar i {
+      font-size: 2rem;
+      cursor: pointer;
+      margin: 15px 0;
+    }
+
+    .sidebar i:hover {
+      color: #00bcd4;
+    }
+
+    /* Sidebar text */
+    .sidebar .menu-item {
+      display: none;
+      font-size: 1rem;
+    }
+    .sidebar ul {
+      list-style-type: none; /* Removes the dots */
+      padding: 0; /* Removes default padding */
+      margin: 0; /* Removes default margin */
+    }
+    
+    /* Content Panel */
+    .content-panel {
+      position: fixed;
+      top: 0;
+      right: -100%; /* Fully hides the panel when closed */
+      width: 15%; /* Adjust width as needed */
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: black;
+      box-shadow: -px 0 5px rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      overflow-y: auto;
+      transition: right 0.3s ease-in-out;
+    }
+
+    .content-panel h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .content-panel p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .content-panel .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .content-panel .close-btn:hover {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <ul>
+        <li>
+          <i class="fas fa-history" title="History" onclick="showContent('History', 'Here you can view your chat history.')"></i>
+          <span class="menu-item">History</span>
+        </li>
+        <li>
+          <i class="fas fa-cog" title="Settings" onclick="showContent('Settings', 'Adjust your chatbot settings here.')"></i>
+          <span class="menu-item">Settings</span>
+        </li>
+        <li>
+          <i class="fas fa-question-circle" title="Help" onclick="showContent('Help', 'Find FAQs and support information here.')"></i>
+          <span class="menu-item">Help</span>
+        </li>
+      </ul>
     </div>
 
-    <script type="module" src="js/avator.js"></script>
-    <script type="module" src="js/send_message.js"></script>
-    <script type="module" src="js/speechtotext.js"></script>
-  </body>
+    <!-- Avatar and Chat Containers -->
+    <div class="avatar-container">
+      <div id="container3D"></div>
+    </div>
+    <div class="chat-container">
+      <div class="chat-box" id="chat-box" type="text">
+        <div class="message bot-message">
+          <div class="response-title">Hi! How can I assist you today?</div>
+          <ul class="response-points">
+            <li>Option 1: Ask for assistance</li>
+            <li>Option 2: Learn more about the chatbot</li>
+          </ul>
+        </div>
+      </div>
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Ask Something...">
+        <button class="speak-button" id="mic-btn">🎙️</button>
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Panel -->
+  <div class="content-panel" id="content-panel">
+    <i class="fas fa-times close-btn" onclick="closeContentPanel()"></i>
+    <h2 id="content-title"></h2>
+    <div id="content-text">
+      <!-- Chat history will be dynamically rendered here -->
+    </div>
+  </div>
+  
+  <script type="module" src="js/avator.js"></script>
+  <script type="module" src="js/send_message.js"></script>
+  <script type="module" src="js/speechtotext.js"></script>
+  <script>
+  // Sample savedChats data for testing
+  const savedChats = [
+    { name: 'Chat 1', messages: [{ type: 'bot', text: 'Hello!' }, { type: 'user', text: 'Hi there!' }] },
+    { name: 'Chat 2', messages: [{ type: 'bot', text: 'How can I help?' }, { type: 'user', text: 'I need assistance.' }] }
+  ];
+
+  let currentChat = [];  // Store the current chat's messages
+
+  function showContent(title, text) {
+    const contentPanel = document.getElementById("content-panel");
+    const contentTitle = document.getElementById("content-title");
+    const contentText = document.getElementById("content-text");
+
+    contentTitle.textContent = title;
+
+    if (title === "History") {
+      // Generate a list of chat history dynamically
+      let historyHTML = "<ul>";
+      savedChats.forEach((chat, index) => {
+        historyHTML += `
+          <li>
+            <span onclick="loadChatFromHistory(${index})">${chat.name}</span>
+            <span class="delete-btn" onclick="deleteChat(${index}, event)">✖</span>
+          </li>`;
+      });
+      historyHTML += "</ul>";
+      contentText.innerHTML = historyHTML;
+    } else {
+      contentText.textContent = text;
+    }
+
+    contentPanel.style.right = "0";
+  }
+
+  function loadChatFromHistory(index) {
+    const chat = savedChats[index];
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = ""; // Clear current chat display
+
+    // Render the selected chat messages
+    chat.messages.forEach((message) => {
+      const messageDiv = document.createElement("div");
+      messageDiv.className = message.type === "bot" ? "message bot-message" : "message user-message";
+      messageDiv.textContent = message.text;
+      chatBox.appendChild(messageDiv);
+    });
+
+    // Close the content panel after loading the chat
+    closeContentPanel();
+  }
+
+  function closeContentPanel() {
+    const contentPanel = document.getElementById('content-panel');
+    contentPanel.style.right = '-100%';
+  }
+
+  function saveCurrentChat() {
+    const chatName = `Chat ${savedChats.length + 1}`;  // Generate a unique name for the chat
+    savedChats.push({ name: chatName, messages: [...currentChat] });  // Save a copy of the current chat
+
+    // Optionally, you can display a success message or alert
+    alert("Chat saved successfully!");
+  }
+
+  function startNewChat() {
+    // Save the current chat before starting a new one
+    saveCurrentChat();
+
+    // Clear the current chat
+    currentChat = [];
+
+    // Clear the chat display area
+    const chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML = "";  // Clear messages
+
+    // Optionally, reset the user input field
+    document.getElementById("user-input").value = "";
+  }
+
+  // Event listener for the "New Chat" button
+  document.getElementById("new-chat-btn").addEventListener("click", startNewChat);
+
+  // Toggle sidebar expansion on click
+  document.getElementById('sidebar').addEventListener('click', function (event) {
+    if (event.target.tagName.toLowerCase() === 'i') {
+      this.classList.toggle('expanded');
+    }
+  });
+</script>
+
+</body>
 </html>

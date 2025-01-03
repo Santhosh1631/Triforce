@@ -1,5 +1,7 @@
 Flask
 flask-cors
 google-generativeai
+flask-mysqldb 
+bcrypt
 # pip install -r requirements.txt
 #first
