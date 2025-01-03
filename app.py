@@ -70,6 +70,7 @@ def login():
             return jsonify({"error": "User not found"}), 404
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 # Configure the Google Generative AI API
 GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"
 genai.configure(api_key=GOOGLE_API_KEY)
@@ -88,6 +89,11 @@ def prompt(user_id, user_input):
         # Add the user's input to the context
         user_context[user_id].append(f"User: {user_input}")
 
+        # Limit context to the last 5 exchanges for brevity
+        max_context_length = 5
+        if len(user_context[user_id]) > max_context_length * 2:
+            user_context[user_id] = user_context[user_id][-max_context_length * 2:]
+
         # Construct the conversation history
         conversation_history = "\n".join(user_context[user_id])
 
@@ -96,8 +102,17 @@ def prompt(user_id, user_input):
             contents=[{"parts": [{"text": conversation_history}]}]
         )
 
-        # Extract the generated response and add it to the context
-        bot_response = response.parts[0].text
+        # Extract the generated response
+        if response.parts and len(response.parts) > 0:
+            bot_response = response.parts[0].text.strip()
+        else:
+            bot_response = "I'm sorry, I couldn't generate a response."
+
+        # Remove unwanted prefixes like "Assistant:" if they exist
+        if bot_response.startswith("Assistant: "):
+            bot_response = bot_response[len("Assistant: "):]
+
+        # Append the bot's response to the context
         user_context[user_id].append(f"Bot: {bot_response}")
 
         return bot_response

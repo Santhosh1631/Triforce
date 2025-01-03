@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Avatar Chat with Sidebar</title>
-  <!-- Font Awesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="static/styles.css">
   <style>
@@ -53,6 +52,10 @@
       align-items: center;
       justify-content: space-around;
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+      transition: width 0.3s ease;
+    }
+    .sidebar.expanded {
+      width: 200px; /* Expanded width */
     }
     /* Sidebar icons */
     .sidebar i {
@@ -70,12 +73,16 @@
       display: none;
       font-size: 1rem;
     }
+
+    .sidebar.expanded .menu-item {
+      display: block; /* Show text when expanded */
+    }
     .sidebar ul {
       list-style-type: none; /* Removes the dots */
       padding: 0; /* Removes default padding */
       margin: 0; /* Removes default margin */
     }
-    
+
     /* Content Panel */
     .content-panel {
       position: fixed;
@@ -108,6 +115,12 @@
       font-size: 1.2rem;
       cursor: pointer;
       color: #333;
+    }
+    .icon-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: 10px;
     }
 
     .content-panel .close-btn:hover {
@@ -153,6 +166,7 @@
         <input type="text" id="user-input" placeholder="Ask Something...">
         <button class="speak-button" id="mic-btn">🎙️</button>
         <button id="send-btn">Send</button>
+        <button id="stop-btn" style="display: none;">Stop</button>
       </div>
     </div>
   </div>
@@ -165,100 +179,141 @@
       <!-- Chat history will be dynamically rendered here -->
     </div>
   </div>
-  
+
   <script type="module" src="js/avator.js"></script>
   <script type="module" src="js/send_message.js"></script>
   <script type="module" src="js/speechtotext.js"></script>
   <script>
-  // Sample savedChats data for testing
-  const savedChats = [
-    { name: 'Chat 1', messages: [{ type: 'bot', text: 'Hello!' }, { type: 'user', text: 'Hi there!' }] },
-    { name: 'Chat 2', messages: [{ type: 'bot', text: 'How can I help?' }, { type: 'user', text: 'I need assistance.' }] }
-  ];
+    // Sample savedChats data for testing
+    const savedChats = [
+      { name: 'Chat 1', messages: [{ type: 'bot', text: 'Hello!' }, { type: 'user', text: 'Hi there!' }] },
+      { name: 'Chat 2', messages: [{ type: 'bot', text: 'How can I help?' }, { type: 'user', text: 'I need assistance.' }] }
+    ];
 
-  let currentChat = [];  // Store the current chat's messages
+    let currentChat = [];  // Store the current chat's messages
+    let isResponseGenerating = false;  // Flag to track if a response is being generated
 
-  function showContent(title, text) {
-    const contentPanel = document.getElementById("content-panel");
-    const contentTitle = document.getElementById("content-title");
-    const contentText = document.getElementById("content-text");
+    // Show content panel with title and text
+    function showContent(title, text) {
+      const contentPanel = document.getElementById("content-panel");
+      const contentTitle = document.getElementById("content-title");
+      const contentText = document.getElementById("content-text");
 
-    contentTitle.textContent = title;
+      contentTitle.textContent = title;
 
-    if (title === "History") {
-      // Generate a list of chat history dynamically
-      let historyHTML = "<ul>";
-      savedChats.forEach((chat, index) => {
-        historyHTML += `
-          <li>
-            <span onclick="loadChatFromHistory(${index})">${chat.name}</span>
-            <span class="delete-btn" onclick="deleteChat(${index}, event)">✖</span>
-          </li>`;
-      });
-      historyHTML += "</ul>";
-      contentText.innerHTML = historyHTML;
-    } else {
-      contentText.textContent = text;
+      if (title === "History") {
+        let historyHTML = "<ul>";
+        savedChats.forEach((chat, index) => {
+          historyHTML += `
+            <li>
+              <span onclick="loadChatFromHistory(${index})">${chat.name}</span>
+              <span class="delete-btn" onclick="deleteChat(${index}, event)">✖</span>
+            </li>`;
+        });
+        historyHTML += "</ul>";
+        contentText.innerHTML = historyHTML;
+      } else {
+        contentText.textContent = text;
+      }
+
+      contentPanel.style.right = "0";
     }
 
-    contentPanel.style.right = "0";
-  }
+    // Load chat history and display the messages
+    function loadChatFromHistory(index) {
+      const chat = savedChats[index];
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = "";  // Clear current chat display
 
-  function loadChatFromHistory(index) {
-    const chat = savedChats[index];
-    const chatBox = document.getElementById("chat-box");
-    chatBox.innerHTML = ""; // Clear current chat display
+      chat.messages.forEach((message) => {
+        const messageDiv = document.createElement("div");
+        messageDiv.className = message.type === "bot" ? "message bot-message" : "message user-message";
+        messageDiv.textContent = message.text;
+        chatBox.appendChild(messageDiv);
+      });
 
-    // Render the selected chat messages
-    chat.messages.forEach((message) => {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = message.type === "bot" ? "message bot-message" : "message user-message";
-      messageDiv.textContent = message.text;
-      chatBox.appendChild(messageDiv);
+      closeContentPanel();
+    }
+
+    // Close the content panel
+    function closeContentPanel() {
+      const contentPanel = document.getElementById('content-panel');
+      contentPanel.style.right = '-100%';
+    }
+
+    // Save current chat
+    function saveCurrentChat() {
+      const chatName = `Chat ${savedChats.length + 1}`;
+      savedChats.push({ name: chatName, messages: [...currentChat] });
+      alert("Chat saved successfully!");
+    }
+
+    // Start a new chat
+    function startNewChat() {
+      saveCurrentChat();
+      currentChat = [];
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = "";  
+      document.getElementById("user-input").value = "";
+    }
+
+    // Toggle sidebar expansion on click
+    document.getElementById('sidebar').addEventListener('click', function (event) {
+      if (event.target.tagName.toLowerCase() === 'i') {
+        this.classList.toggle('expanded');
+      }
     });
 
-    // Close the content panel after loading the chat
-    closeContentPanel();
-  }
+    // Function to handle sending messages
+    document.getElementById("send-btn").addEventListener("click", function() {
+      if (isResponseGenerating) {
+        return; // Prevent sending messages if a response is being generated
+      }
 
-  function closeContentPanel() {
-    const contentPanel = document.getElementById('content-panel');
-    contentPanel.style.right = '-100%';
-  }
+      const userMessage = document.getElementById("user-input").value;
+      if (userMessage.trim() === "") return; // Don't send empty messages
 
-  function saveCurrentChat() {
-    const chatName = `Chat ${savedChats.length + 1}`;  // Generate a unique name for the chat
-    savedChats.push({ name: chatName, messages: [...currentChat] });  // Save a copy of the current chat
+      const chatBox = document.getElementById("chat-box");
+      const userMessageDiv = document.createElement("div");
+      userMessageDiv.className = "message user-message";
+      userMessageDiv.textContent = userMessage;
+      chatBox.appendChild(userMessageDiv);
 
-    // Optionally, you can display a success message or alert
-    alert("Chat saved successfully!");
-  }
+      currentChat.push({ type: "user", text: userMessage });
+      document.getElementById("user-input").value = "";  // Clear the input field
 
-  function startNewChat() {
-    // Save the current chat before starting a new one
-    saveCurrentChat();
+      // Disable the send button and change its text to "Stop"
+      document.getElementById("send-btn").disabled = true;
+      document.getElementById("stop-btn").style.display = "inline-block"; // Show stop button
+      document.getElementById("send-btn").textContent = "Stop";
+      isResponseGenerating = true;
 
-    // Clear the current chat
-    currentChat = [];
+      // Simulate bot response delay (replace with real bot API call)
+      setTimeout(() => {
+        const botMessage = "Response generated!";
+        const botMessageDiv = document.createElement("div");
+        botMessageDiv.className = "message bot-message";
+        botMessageDiv.textContent = botMessage;
+        chatBox.appendChild(botMessageDiv);
 
-    // Clear the chat display area
-    const chatBox = document.getElementById("chat-box");
-    chatBox.innerHTML = "";  // Clear messages
+        currentChat.push({ type: "bot", text: botMessage });
 
-    // Optionally, reset the user input field
-    document.getElementById("user-input").value = "";
-  }
+        // Enable the button and reset the text back to "Send"
+        document.getElementById("send-btn").disabled = false;
+        document.getElementById("send-btn").textContent = "Send";
+        document.getElementById("stop-btn").style.display = "none"; // Hide stop button
+        isResponseGenerating = false;
+      }, 3000); // Simulating a 3-second delay
+    });
 
-  // Event listener for the "New Chat" button
-  document.getElementById("new-chat-btn").addEventListener("click", startNewChat);
-
-  // Toggle sidebar expansion on click
-  document.getElementById('sidebar').addEventListener('click', function (event) {
-    if (event.target.tagName.toLowerCase() === 'i') {
-      this.classList.toggle('expanded');
-    }
-  });
-</script>
-
+    // Function to stop response generation
+    document.getElementById("stop-btn").addEventListener("click", function() {
+      // Reset the state to stop the response generation
+      isResponseGenerating = false;
+      document.getElementById("send-btn").disabled = false; // Enable send button again
+      document.getElementById("send-btn").textContent = "Send";
+      document.getElementById("stop-btn").style.display = "none"; // Hide stop button
+    });
+  </script>
 </body>
 </html>
