@@ -1,11 +1,75 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_mysqldb import MySQL
+import bcrypt
 import google.generativeai as genai
 
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
 CORS(app)
+# MySQL Configuration
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'san16'
+app.config['MYSQL_DB'] = 'userdb'
 
+mysql = MySQL(app)
+
+# Route for user registration
+@app.route("/register", methods=["POST"])
+def register():
+    try:
+        data = request.json
+        email = data.get("email", "").strip()
+        password = data.get("password", "").strip()
+
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+
+        # Hash the password
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Insert into the database
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, hashed_password))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "User registered successfully!"}), 201
+    except Exception as e:
+        if "Duplicate entry" in str(e):
+            return jsonify({"error": "Email already registered"}), 400
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+# Route for user login
+@app.route("/login", methods=["POST"])
+def login():
+    try:
+        data = request.json
+        email = data.get("email", "").strip()
+        password = data.get("password", "").strip()
+
+        if not email or not password:
+            return jsonify({"error": "Email and password are required"}), 400
+
+        # Check email in the database
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT password FROM users WHERE email = %s", (email,))
+        result = cur.fetchone()
+        cur.close()
+
+        if result:
+            hashed_password = result[0]
+
+            # Verify the password
+            if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                return jsonify({"message": "Login successful!"}), 200
+            else:
+                return jsonify({"error": "Invalid password"}), 401
+        else:
+            return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 # Configure the Google Generative AI API
 GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"
 genai.configure(api_key=GOOGLE_API_KEY)
