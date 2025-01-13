@@ -8,13 +8,64 @@ import requests
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
 CORS(app)
-# MySQL Configuration
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'san16'
-app.config['MYSQL_DB'] = 'userdb'
 
+# MySQL Configuration
+app.config['MYSQL_HOST'] = 'sql12.freesqldatabase.com'
+app.config['MYSQL_USER'] = 'sql12757205'
+app.config['MYSQL_PASSWORD'] = 'i9uXQwuI6Z'
+app.config['MYSQL_DB'] = 'sql12757205'
+app.config['MYSQL_PORT'] = 3306
+
+# Initialize MySQL
 mysql = MySQL(app)
+
+# Configure the Google Generative AI API
+GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
+
+# Store conversation context per user
+user_context = {}
+
+# Pexels API Configuration
+PEXELS_API_KEY = "WkToHzJ2v1vsqX4YySjkgjqLVfQVFuXoLZY43dvNueysXOKjo8RBnQvo"
+
+# Helper function to fetch image from Pexels
+def fetch_image(query):
+    headers = {"Authorization": PEXELS_API_KEY}
+    url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        if data["photos"]:
+            return data["photos"][0]["src"]["original"]  # Return the URL of the image
+    return None
+
+# Helper function to get a response from the Generative AI model
+def prompt(user_id, user_input):
+    try:
+        # Initialize context if the user is interacting for the first time
+        if user_id not in user_context:
+            user_context[user_id] = []
+
+        # Add the user's input to the context
+        user_context[user_id].append(f"User: {user_input}")
+
+        # Construct the conversation history
+        conversation_history = "\n".join(user_context[user_id])
+
+        # Generate response based on the context
+        response = model.generate_content(
+            contents=[{"parts": [{"text": conversation_history}]}]
+        )
+
+        # Extract the generated response and add it to the context
+        bot_response = response.parts[0].text
+        user_context[user_id].append(f"Bot: {bot_response}")
+
+        return bot_response
+    except Exception as e:
+        return f"Error generating response: {str(e)}"
 
 # Route for user registration
 @app.route("/register", methods=["POST"])
@@ -36,7 +87,7 @@ def register():
         mysql.connection.commit()
         cur.close()
 
-        return jsonify({"message": "User registered successfully!"}), 201
+        return jsonify({"message": "User registered successfully!"}), 200
     except Exception as e:
         if "Duplicate entry" in str(e):
             return jsonify({"error": "Email already registered"}), 400
@@ -72,54 +123,6 @@ def login():
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
-# Configure the Google Generative AI API
-GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"
-genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
-
-# Store conversation context per user
-user_context = {}
-
-# Helper function to get a response from the Generative AI model
-def prompt(user_id, user_input):
-    try:
-        # Initialize context if the user is interacting for the first time
-        if user_id not in user_context:
-            user_context[user_id] = []
-
-        # Add the user's input to the context
-        user_context[user_id].append(f"User: {user_input}")
-
-        # Limit context to the last 5 exchanges for brevity
-        max_context_length = 5
-        if len(user_context[user_id]) > max_context_length * 2:
-            user_context[user_id] = user_context[user_id][-max_context_length * 2:]
-
-        # Construct the conversation history
-        conversation_history = "\n".join(user_context[user_id])
-
-        # Generate response based on the context
-        response = model.generate_content(
-            contents=[{"parts": [{"text": conversation_history}]}]
-        )
-
-        # Extract the generated response
-        if response.parts and len(response.parts) > 0:
-            bot_response = response.parts[0].text.strip()
-        else:
-            bot_response = "I'm sorry, I couldn't generate a response."
-
-        # Remove unwanted prefixes like "Assistant:" if they exist
-        if bot_response.startswith("Assistant: "):
-            bot_response = bot_response[len("Assistant: "):]
-
-        # Append the bot's response to the context
-        user_context[user_id].append(f"Bot: {bot_response}")
-
-        return bot_response
-    except Exception as e:
-        return f"Error generating response: {str(e)}"
-
 # Define the chatbot endpoint
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -130,16 +133,19 @@ def chat():
 
         if user_message:
             # Get the bot's response from the AI model
-            image_url = generate_image(user_message)
             bot_message = prompt(user_id, user_message)
+
+            # Fetch image related to the user message
+            image_url = fetch_image(user_message)
         else:
             bot_message = "I didn't understand that. Could you please clarify?"
             image_url = None
-        
-        # Return the bot response along with the generated image URL
+
         return jsonify({"response": bot_message, "image_url": image_url})
     except Exception as e:
-
+        # Handle any unexpected errors
         return jsonify({"response": f"An error occurred: {str(e)}", "image_url": None})
+
+# Main entry point for running the app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
