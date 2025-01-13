@@ -137,6 +137,15 @@ function sendMessage() {
           chatBox.appendChild(iconContainer);
         }
 
+        // Display the image if it's available
+        if (data.image_url) {
+          const image = document.createElement("img");
+          image.src = data.image_url;
+          image.alt = "Related to your query";
+          image.style.maxWidth = "100%";
+          chatBox.appendChild(image);
+        }
+
         chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
       })
       .catch((error) => console.error("Error:", error));
