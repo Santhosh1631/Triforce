@@ -95,6 +95,36 @@
             background: #540da5;
         }
         
+<<<<<<< HEAD
+        .psignin-btn,
+        .psignup-btn {
+            align-content: center;
+            top: 230px;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .psignin-btn {
+            background: #8d49d5;
+        }
+        
+        .psignin-btn:hover {
+            background: #540da5;
+        }
+        
+        .psignup-btn {
+            background: #6a11cb;
+        }
+        
+        .psignup-btn:hover {
+            background: #540da5;
+        }
+        
+=======
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
         .modal {
             display: none;
             position: fixed;
@@ -174,7 +204,11 @@
     <header>
         <h1>Triforce Chatbot</h1>
         <p>Your AI companion, always here for you.</p>
+<<<<<<< HEAD
         <button class="btn" onclick="startChat()">Start Chatting</button>
+=======
+        <button class="btn">Start Chatting</button>
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
         <button class="signin-btn" onclick="openModalsignin()">Sign In</button>
         <button class="signup-btn" onclick="openModalsignup()">Sign Up</button>
     </header>
@@ -206,6 +240,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Prompt Modal -->
     <div id="promptModal" class="modal">
         <div class="modal-content">
@@ -216,12 +251,17 @@
         </div>
     </div>
 
+=======
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
     <!-- Toast Notification -->
     <div id="toast">Action Successful!</div>
 
     <script>
+<<<<<<< HEAD
         let isUserSignedIn = false; // Track sign-in status
 
+=======
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
         document.getElementById("registerBtn").addEventListener("click", function() {
             const email = document.querySelector("#signupModal input[type='text']").value;
             const password = document.querySelector("#signupModal input[type='password']").value;
@@ -242,7 +282,11 @@
                         showToast(data.error, true);
                     } else {
                         closeModalsignup();
+<<<<<<< HEAD
                         showToast("Registration Successful!");
+=======
+                        showToast('Registration Successful!');
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
                     }
                 })
                 .catch((error) => {
@@ -250,6 +294,10 @@
                     console.error("Error:", error);
                 });
         });
+<<<<<<< HEAD
+
+=======
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
         document.getElementById("signinBtn").addEventListener("click", function() {
             const email = document.querySelector("#signinModal input[type='text']").value;
             const password = document.querySelector("#signinModal input[type='password']").value;
@@ -269,10 +317,15 @@
                     if (data.error) {
                         showToast(data.error, true);
                     } else {
+<<<<<<< HEAD
                         showToast("Signed in successfully!");
                         isUserSignedIn = true; // Update sign-in status
                         closeModalsignin();
                         redirectToChatPage(); // Redirect after sign-in
+=======
+                        showToast('signed in');
+                        closeModalsignin();
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
                     }
                 })
                 .catch((error) => {
@@ -281,6 +334,7 @@
                 });
         });
 
+<<<<<<< HEAD
         function startChat() {
             if (!isUserSignedIn) {
                 openPromptModal(); // Open prompt modal for sign-in/sign-up
@@ -336,6 +390,18 @@
             setTimeout(() => {
                 toast.style.display = "none";
             }, 3000);
+=======
+        function openModalsignin() {
+            document.getElementById('signinModal').style.display = 'flex';
+        }
+
+        function openModalsignup() {
+            document.getElementById('signupModal').style.display = 'flex';
+        }
+
+        function closeModalsignin() {
+            document.getElementById('signinModal').style.display = 'none';
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
         }
 
         function closeModalsignup() {
@@ -354,4 +420,9 @@
     </script>
 </body>
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> 65a232a301912a1eea2eb3e3d33092fae3fa192b
 </html>
