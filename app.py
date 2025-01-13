@@ -152,9 +152,7 @@ def chat():
         # Return the bot response along with the generated image URL
         return jsonify({"response": bot_message, "image_url": image_url})
     except Exception as e:
-        # Handle any unexpected errors
-        return jsonify({"response": f"An error occurred: {str(e)}", "image_url": None})
 
-# Main entry point for running the app
+        return jsonify({"response": f"An error occurred: {str(e)}", "image_url": None})
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
