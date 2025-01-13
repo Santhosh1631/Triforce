@@ -113,6 +113,7 @@ function sendMessage() {
           chatBox.appendChild(iconContainer); // Append the icon container
         }
 
+<<<<<<< HEAD
         // Scroll to the bottom after adding new message
         chatBox.scrollTop = chatBox.scrollHeight;
 
@@ -122,6 +123,18 @@ function sendMessage() {
         // Change the button text back to "Start" after response is complete
         sendBtn.textContent = "Start";
         sendBtn.disabled = false;
+=======
+        // Display the image if it's available
+        if (data.image_url) {
+          const image = document.createElement("img");
+          image.src = data.image_url;
+          image.alt = "Related to your query";
+          image.style.maxWidth = "100%";
+          chatBox.appendChild(image);
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+>>>>>>> 665b6b71d56e06675fb18de07e4eb6c71a101d06
       })
       .catch((error) => {
         console.error("Error:", error);
