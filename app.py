@@ -10,11 +10,11 @@ app = Flask(__name__)
 CORS(app)
 
 # MySQL Configuration
-app.config['MYSQL_HOST'] = 'sql12.freesqldatabase.com'
-app.config['MYSQL_USER'] = 'sql12757205'
-app.config['MYSQL_PASSWORD'] = 'i9uXQwuI6Z'
-app.config['MYSQL_DB'] = 'sql12757205'
-app.config['MYSQL_PORT'] = 3306
+app.config['MYSQL_HOST'] = '161.97.70.226'  # Updated Host
+app.config['MYSQL_USER'] = 'triforce'       # Updated User
+app.config['MYSQL_PASSWORD'] = 'hSPEm1fpQPMGWzNbVl1e'  # Updated Password
+app.config['MYSQL_DB'] = 'triforcedb'       # Updated Database Name
+app.config['MYSQL_PORT'] = 3306             # Default MySQL Port
 
 # Initialize MySQL
 mysql = MySQL(app)
@@ -139,12 +139,12 @@ def chat():
             image_url = fetch_image(user_message)
         else:
             bot_message = "I didn't understand that. Could you please clarify?"
-            image_url = None
+         
 
-        return jsonify({"response": bot_message, "image_url": image_url})
+        return jsonify({"response": bot_message})
     except Exception as e:
         # Handle any unexpected errors
-        return jsonify({"response": f"An error occurred: {str(e)}", "image_url": None})
+        return jsonify({"response": f"An error occurred: {str(e)}"})
 
 # Main entry point for running the app
 if __name__ == '__main__':

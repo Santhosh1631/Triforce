@@ -37,11 +37,11 @@ let avatar;
 camera.position.set(0, 1, 2); // Move the camera closer to zoom in (without reducing the avatar size)
 
 loader.load(
-    "models/model 3.glb", // Adjust the path as needed
+    "models/modelkc.glb", // Adjust the path as needed
     function (gltf) {
         avatar = gltf.scene;
 
-        avatar.scale.set(2, 2, 2); // Keep the avatar's scale unchanged (do not reduce size)
+        avatar.scale.set(2, 2, 1); // Keep the avatar's scale unchanged (do not reduce size)
         avatar.position.set(0, -1.5, 0); // Move the avatar lower so only the legs are visible
 
         // Optional: Focus the camera on the legs by adjusting position and angle
