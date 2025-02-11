@@ -4,215 +4,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive AI Chatbot</title>
+    <title>Triforce Chatbot</title>
     <style>
         /* General Styles */
-        
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: url('templates/img/chatbot bg.jpg') no-repeat center center fixed;
-            background-size: cover;
-            overflow-x: hidden;
-            color: #fff;
-        }
-        
-        header {
-            text-align: center;
-            padding: 80px 20px;
-            position: relative;
-        }
-        
-        header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-        }
-        
-        header p {
-            font-size: 1.2rem;
-        }
-        
-        .btn {
-            padding: 15px 30px;
-            background: #fff;
-            color: #6a11cb;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-top: 20px;
-            transition: all 0.3s ease-in-out;
-        }
-        
-        .btn:hover {
-            transform: scale(1.1);
-            background: #eaeaea;
-        }
-        
-        .hero {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            padding: 60px 20px;
-            text-align: left;
-            height: auto;
-            margin-left: 70%;
-            margin-top: 5%;
-            margin-right: 4%;
-        }
-        
-        .signin-btn,
-        .signup-btn {
-            position: absolute;
-            top: 20px;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            color: white;
-        }
-        
-        .signin-btn {
-            right: 20px;
-            background: #8d49d5;
-        }
-        
-        .signin-btn:hover {
-            background: #540da5;
-        }
-        
-        .signup-btn {
-            right: 110px;
-            background: #6a11cb;
-        }
-        
-        .signup-btn:hover {
-            background: #540da5;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: #fff;
-            color: #000;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            width: 80%;
-            max-width: 400px;
-        }
-        
-        .modal-content h2 {
-            margin-top: 0;
-        }
-        
-        .modal-content input,
-        .modal-content button {
-            margin-top: 10px;
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-        }
-        
-        .modal-content button {
-            background: #6a11cb;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .modal-content button:hover {
-            background: #540da5;
-        }
-        
-        .modal-content .close {
-            background: none;
-            color: #000;
-            font-size: 1.5rem;
-            text-align: right;
-            cursor: pointer;
-            border: none;
-        }
-        /* Toast Notification */
-        
-        #toast {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #4caf50;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 1001;
-        }
-        
-        #toast.error {
-            background: #f44336;
-        }
+  /* General Styles */
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light gray background - calming and easy on the eyes */
+    color: #333; /* Dark gray text for readability */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+    font-size: 1.1rem;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 50px 20px;
+    animation: fadeIn 1.5s ease-out;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #3b5998; /* Calming blue for header */
+}
+
+header p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: auto;
+    font-weight: bold;
+    color: #666; /* Soft gray for description text */
+}
+
+/* Buttons */
+.btn {
+    padding: 15px 30px;
+    background: #0066cc; /* Soft blue for buttons */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    background: #0099cc; /* Slight hover effect */
+    transform: translateY(-5px);
+}
+
+.buttons {
+    margin-top: 20px;
+}
+
+.buttons button {
+    margin: 10px;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero {
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+    padding: 30px;
+    background: #e6f7ff; /* Very light blue background - calm and easy on the eyes */
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    font-weight: bold;
+    color: #555; /* Darker text for better contrast */
+}
+
+/* Sign-In and Sign-Up Buttons */
+.signin-btn,
+.signup-btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: 0.3s;
+    font-weight: bold;
+    background: #005bb5; /* Calming blue */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.signin-btn:hover,
+.signup-btn:hover {
+    background: #0086cc; /* Slightly lighter hover color */
+    transform: scale(1.05);
+}
+
+.signup-btn {
+    background: #004b8e;
+}
+
+.signup-btn:hover {
+    background: #006db3;
+}
+
+.signin-btn {
+    background: #005bb5;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Darker background for focus */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #ffffff;
+    color: #333;
+    border-radius: 10px;
+    padding: 25px;
+    text-align: center;
+    width: 90%;
+    max-width: 350px;
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #004b8e; /* Soft blue header for modal */
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Light background for input fields */
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    background: #005bb5;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.modal-content button:hover {
+    background: #0086cc;
+}
+
+/* Toast Notification */
+#toast {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4caf50; /* Calming green for success messages */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
     </style>
 </head>
 
 <body>
+
     <header>
         <h1>Triforce Chatbot</h1>
         <p>Your AI companion, always here for you.</p>
-        <button class="btn" onclick="startChat()">Start Chatting</button>
-        <button class="signin-btn" onclick="openModalsignin()">Sign In</button>
-        <button class="signup-btn" onclick="openModalsignup()">Sign Up</button>
+        <div class="buttons">
+            <button class="btn" onclick="startChat()">Start Chatting</button>
+            <button class="signin-btn" onclick="openModalsignin()">Sign In</button>
+            <button class="signup-btn" onclick="openModalsignup()">Sign Up</button>
+        </div>
     </header>
 
     <section class="hero">
-        <p>"Triforce is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts
-            content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth."</p>
+        <p>"Triforce is an empathetic AI-driven chatbot designed to support neurodivergent students by adapting to their learning preferences. It incorporates emotional recognition and tailors responses based on individual strengths, such as visual, logical, or auditory abilities. With its personalized approach, Triforce aims to create a more inclusive and effective learning environment, fostering better engagement and understanding."</p>
     </section>
 
-    <!-- Modal for Sign-In -->
-    <div id="signinModal" class="modal">
+    <!-- Modals -->
+    <div id="signinModal" class="modal" style="display: none;">
         <div class="modal-content">
             <button class="close" onclick="closeModalsignin()">&times;</button>
             <h2>Sign In</h2>
-            <input type="text" placeholder="E-mail" required>
-            <input type="password" placeholder="Password" required>
-            <button id="signinBtn">Sign In</button>
+            <input type="text" placeholder="E-mail">
+            <input type="password" placeholder="Password">
+            <button onclick="signIn()">Sign In</button>
         </div>
     </div>
 
-    <!-- Modal for Sign-Up -->
-    <div id="signupModal" class="modal">
+    <div id="signupModal" class="modal" style="display: none;">
         <div class="modal-content">
             <button class="close" onclick="closeModalsignup()">&times;</button>
             <h2>Sign Up</h2>
-            <input type="text" placeholder="Email" required>
-            <input type="password" placeholder="Password" required>
-            <button id="registerBtn">Register</button>
-        </div>
-    </div>
-
-    <!-- Prompt Modal -->
-    <div id="promptModal" class="modal">
-        <div class="modal-content">
-            <h2>Do you want to sign up or sign in?</h2>
-            <button class="psignin-btn" onclick="redirectToSignIn()">Sign In</button>
-            <button class="psignup-btn" onclick="redirectToSignUp()">Sign Up</button>
-            <button class="close" onclick="closePromptModal()">Cancel</button>
+            <input type="text" placeholder="Email">
+            <input type="password" placeholder="Password">
+            <button onclick="signUp()">Register</button>
         </div>
     </div>
 
@@ -220,104 +251,16 @@
     <div id="toast">Action Successful!</div>
 
     <script>
-        let isUserSignedIn = false; // Track sign-in status
-
-        document.getElementById("registerBtn").addEventListener("click", function() {
-            const email = document.querySelector("#signupModal input[type='text']").value;
-            const password = document.querySelector("#signupModal input[type='password']").value;
-
-            fetch("http://localhost:5001/register", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password
-                    }),
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.error) {
-                        showToast(data.error, true);
-                    } else {
-                        closeModalsignup();
-                        showToast("Registration Successful!");
-                    }
-                })
-                .catch((error) => {
-                    showToast("An error occurred during registration", true);
-                    console.error("Error:", error);
-                });
-        });
-        document.getElementById("signinBtn").addEventListener("click", function() {
-            const email = document.querySelector("#signinModal input[type='text']").value;
-            const password = document.querySelector("#signinModal input[type='password']").value;
-
-            fetch("http://localhost:5001/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        email,
-                        password
-                    }),
-                })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.error) {
-                        showToast(data.error, true);
-                    } else {
-                        showToast("Signed in successfully!");
-                        isUserSignedIn = true; // Update sign-in status
-                        closeModalsignin();
-                        redirectToChatPage(); // Redirect after sign-in
-                    }
-                })
-                .catch((error) => {
-                    showToast("An error occurred during login", true);
-                    console.error("Error:", error);
-                });
-        });
-
-        function startChat() {
-            if (!isUserSignedIn) {
-                openPromptModal(); // Open prompt modal for sign-in/sign-up
-            } else {
-                redirectToChatPage(); // Redirect directly if signed in
-            }
-        }
-
-        function redirectToChatPage() {
-            // Replace 'chat.html' with the actual chat page
-            window.location.href = "templates/index.html";
-        }
-
-        function openPromptModal() {
-            document.getElementById('promptModal').style.display = 'flex';
-        }
-
-        function closePromptModal() {
-            document.getElementById('promptModal').style.display = 'none';
-        }
-
-        function redirectToSignIn() {
-            closePromptModal();
-            openModalsignin();
-        }
-
-        function redirectToSignUp() {
-            closePromptModal();
-            openModalsignup();
-        }
-
         function openModalsignin() {
             document.getElementById("signinModal").style.display = "flex";
+            // Close signup modal if open
+            document.getElementById("signupModal").style.display = "none";
         }
 
         function openModalsignup() {
             document.getElementById("signupModal").style.display = "flex";
+            // Close signin modal if open
+            document.getElementById("signinModal").style.display = "none";
         }
 
         function closeModalsignin() {
@@ -331,28 +274,21 @@
         function showToast(message, isError = false) {
             const toast = document.getElementById("toast");
             toast.textContent = message;
-            toast.className = isError ? "error" : "";
             toast.style.display = "block";
+            toast.style.background = isError ? "#f44336" : "#4caf50";
             setTimeout(() => {
                 toast.style.display = "none";
             }, 3000);
         }
 
-        function closeModalsignup() {
-            document.getElementById('signupModal').style.display = 'none';
-        }
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-            toast.className = isError ? "error" : "";
-            toast.style.display = "block";
+        function startChat() {
+            showToast("Redirecting to chat...");
             setTimeout(() => {
-                toast.style.display = "none";
-            }, 3000);
+                window.location.href = "templates/index.html";
+            }, 1500);
         }
     </script>
+
 </body>
 
 </html>
-<!-- hSPEm1fpQPMGWzNbVl1e -->
