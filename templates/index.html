@@ -8,17 +8,33 @@
   <link rel="stylesheet" href="static/styles.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
+    
 
     body {
-      margin: 0;
-      font-family: 'Lexend', sans-serif;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      background: url("img/chatbot bg.jpg") no-repeat center center;
-      background-size: cover;
-      color: #000000;
-    }
+  margin: 0;
+  font-family: 'Lexend', sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(-45deg, 
+    #1E293B, #1E40AF, #2563EB, #4F46E5, #6D28D9, 
+    #9333EA, #A21CAF, #C026D3, #5a316d, #D946EF, 
+    #48274c, #785088, #a6b4ee
+  );
+  background-size: 500% 500%;
+  animation: gradientShift 10s ease-in-out infinite;
+  color: #ffffff;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 25% 55%; } /* More even transition */
+  50% { background-position: 50% 45%; } /* Balanced movement */
+  75% { background-position: 75% 50%; } /* Smooth shift */
+  100% { background-position: 100% 50%; } /* Reset */
+}
+
+
 
     /* Main layout with avatar and chat */
     .main-container {
