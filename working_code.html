@@ -1,20 +1,26 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Avatar Chat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Chat with Sidebar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="static/styles.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Lexend', sans-serif;
             display: flex;
             height: 100vh;
+            overflow: hidden;
             background: url("img/chatbot bg.jpg") no-repeat center center;
             background-size: cover;
             color: #000000;
         }
+        /* Main layout with avatar and chat */
         
         .main-container {
             display: flex;
@@ -27,397 +33,758 @@
             display: flex;
         }
         
-        #container3D {
-            margin-left: -110%;
-            width: 100%;
-            height: 100%;
-        }
-        
         .chat-container {
-            width: 90%;
-            max-width: 900px;
-            border-radius: 15px;
-            overflow: hidden;
+            width: 66%;
+            /* Adjusting for sidebar width */
             display: flex;
             flex-direction: column;
-            margin-top: 10%;
+        }
+        /* Sidebar */
+        
+        .sidebar {
+            width: 60px;
+            /* Initial collapsed width */
+            background-color: rgba(255, 255, 255, 0);
+            color: black;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            transition: width 0.3s ease;
         }
         
-        .chat-box {
-            position: relative;
-            height: 500px;
-            padding: 15px;
+        .sidebar.expanded {
+            width: 200px;
+            /* Expanded width */
+        }
+        /* Sidebar icons */
+        
+        .sidebar i {
+            font-size: 2rem;
+            cursor: pointer;
+            margin: 15px 0;
+        }
+        
+        .sidebar i:hover {
+            color: #00bcd4;
+        }
+        /* Sidebar text */
+        
+        .sidebar .menu-item {
+            display: none;
+            font-size: 1rem;
+        }
+        
+        .sidebar.expanded .menu-item {
+            display: block;
+            /* Show text when expanded */
+        }
+        
+        .sidebar ul {
+            list-style-type: none;
+            /* Removes the dots */
+            padding: 0;
+            /* Removes default padding */
+            margin: 0;
+            /* Removes default margin */
+        }
+        /* Content Panel */
+        
+        .content-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            /* Fully hides the panel when closed */
+            width: 15%;
+            /* Adjust width as needed */
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: black;
+            box-shadow: -px 0 5px rgba(0, 0, 0, 0.3);
+            padding: 10px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+            transition: right 0.3s ease-in-out;
+        }
+        
+        .content-panel h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .content-panel p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .content-panel .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
             color: #333;
-        }
-        
-        .message {
-            margin: 10px 0;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 70%;
-            display: inline-block;
-        }
-        
-        .user-message {
-            align-self: flex-end;
-            background: rgba(36, 150, 255, 0.8);
-            color: white;
-        }
-        
-        .bot-message {
-            align-self: flex-start;
-            background: rgba(108, 71, 230, 0.8);
-            color: white;
-            position: relative;
         }
         
         .icon-container {
             display: flex;
-            margin-left: 20%;
-            gap: 20px;
+            gap: 10px;
+            align-items: center;
+            margin-left: 10px;
         }
         
-        .icon {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            fill: black;
-            transition: transform 0.2s, fill 0.2s;
-        }
-        
-        .icon:hover {
-            fill: #ffd700;
-            transform: scale(1.2);
-        }
-        
-        .bot-message .response-title {
-            font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-        
-        .bot-message .response-points {
-            margin: 0;
-            padding-left: 15px;
-        }
-        
-        .bot-message .response-points li {
-            list-style-type: disc;
-            margin: 5px 0;
-        }
-        
-        .bot-message div {
-            margin-bottom: 10px;
-        }
-        
-        .bot-message ul {
-            padding-left: 20px;
-            list-style-type: disc;
-        }
-        
-        .input-container {
-            display: flex;
-            border-top: 1px solid rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        
-        input[type="text"] {
-            flex: 1;
-            padding: 15px;
-            font-size: 1rem;
-            border: none;
-            outline: none;
-            border-radius: 10px;
-        }
-        
-        button {
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #2575fc, #6a11cb);
-            border: none;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        
-        .speed-control {
-            margin: 10px;
-            text-align: center;
-        }
-        
-        .speed-label {
-            font-size: 0.9rem;
-            margin-right: 10px;
-        }
-        
-        .speed-slider {
-            width: 50%;
+        .content-panel .close-btn:hover {
+            color: red;
         }
     </style>
 </head>
 
 <body>
     <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <ul>
+                <li>
+                    <i class="fas fa-history" title="History" onclick="showContent('History', 'Here you can view your chat history.')"></i>
+                    <span class="menu-item">History</span>
+                </li>
+                <li>
+                    <i class="fas fa-cog" title="Settings" onclick="showContent('Settings', 'Adjust your chatbot settings here.')"></i>
+                    <span class="menu-item">Settings</span>
+                </li>
+                <li>
+                    <i class="fas fa-question-circle" title="Help" onclick="showContent('Help', 'Find FAQs and support information here.')"></i>
+                    <span class="menu-item">Help</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Avatar and Chat Containers -->
         <div class="avatar-container">
             <div id="container3D"></div>
         </div>
         <div class="chat-container">
             <div class="chat-box" id="chat-box" type="text">
                 <div class="message bot-message">
-                    Hi! How can I assist you today?
+                    <div class="response-title">Hi! How can I assist you today?</div>
+                    <ul class="response-points">
+                        <li>Option 1: Ask for assistance</li>
+                        <li>Option 2: Learn more about the chatbot</li>
+                    </ul>
                 </div>
             </div>
             <div class="input-container">
-                <input type="text" id="user-input" placeholder="Type a message..." />
+                <input type="text" id="user-input" placeholder="Ask Something...">
+                <button class="speak-button" id="mic-btn">🎙️</button>
                 <button id="send-btn">Send</button>
+                <button id="stop-btn" style="display: none;">Stop</button>
             </div>
         </div>
     </div>
-    <script type="module" src="script.js"></script>
+
+    <!-- Content Panel -->
+    <div class="content-panel" id="content-panel">
+        <i class="fas fa-times close-btn" onclick="closeContentPanel()"></i>
+        <h2 id="content-title"></h2>
+        <div id="content-text">
+            <!-- Chat history will be dynamically rendered here -->
+        </div>
+    </div>
+
+    <script type="module" src="js/avator.js"></script>
+    <script type="module" src="js/send_message.js"></script>
+    <script type="module" src="js/speechtotext.js"></script>
     <script>
-        function copyTextToClipboard(text, copyIcon) {
-            navigator.clipboard
-                .writeText(text)
-                .then(() => {
-                    const originalIcon = copyIcon.innerHTML; // Save the original icon
-                    copyIcon.innerHTML = `
-                  <path d="M9 16.17l-4.17-4.17-1.41 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />`; // Tick icon
-                    setTimeout(() => {
-                        copyIcon.innerHTML = originalIcon; // Restore the original icon after 5 seconds
-                    }, 5000);
-                })
-                .catch((err) => console.error("Error copying text:", err));
+        // Sample savedChats data for testing
+        const savedChats = [{
+            name: 'Chat 1',
+            messages: [{
+                type: 'bot',
+                text: 'Hello!'
+            }, {
+                type: 'user',
+                text: 'Hi there!'
+            }]
+        }, {
+            name: 'Chat 2',
+            messages: [{
+                type: 'bot',
+                text: 'How can I help?'
+            }, {
+                type: 'user',
+                text: 'I need assistance.'
+            }]
+        }];
+
+        let currentChat = []; // Store the current chat's messages
+        let isResponseGenerating = false; // Flag to track if a response is being generated
+
+        // Show content panel with title and text
+        function showContent(title, text) {
+            const contentPanel = document.getElementById("content-panel");
+            const contentTitle = document.getElementById("content-title");
+            const contentText = document.getElementById("content-text");
+
+            contentTitle.textContent = title;
+
+            if (title === "History") {
+                let historyHTML = "<ul>";
+                savedChats.forEach((chat, index) => {
+                    historyHTML += `
+            <li>
+              <span onclick="loadChatFromHistory(${index})">${chat.name}</span>
+              <span class="delete-btn" onclick="deleteChat(${index}, event)">✖</span>
+            </li>`;
+                });
+                historyHTML += "</ul>";
+                contentText.innerHTML = historyHTML;
+            } else {
+                contentText.textContent = text;
+            }
+
+            contentPanel.style.right = "0";
         }
 
-        document.getElementById("send-btn").addEventListener("click", sendMessage);
+        // Load chat history and display the messages
+        function loadChatFromHistory(index) {
+            const chat = savedChats[index];
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = ""; // Clear current chat display
 
-        document.getElementById("user-input").addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
+            chat.messages.forEach((message) => {
+                const messageDiv = document.createElement("div");
+                messageDiv.className = message.type === "bot" ? "message bot-message" : "message user-message";
+                messageDiv.textContent = message.text;
+                chatBox.appendChild(messageDiv);
+            });
+
+            closeContentPanel();
+        }
+
+        // Close the content panel
+        function closeContentPanel() {
+            const contentPanel = document.getElementById('content-panel');
+            contentPanel.style.right = '-100%';
+        }
+
+        // Save current chat
+        function saveCurrentChat() {
+            const chatName = `Chat ${savedChats.length + 1}`;
+            savedChats.push({
+                name: chatName,
+                messages: [...currentChat]
+            });
+            alert("Chat saved successfully!");
+        }
+
+        // Start a new chat
+        function startNewChat() {
+            saveCurrentChat();
+            currentChat = [];
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = "";
+            document.getElementById("user-input").value = "";
+        }
+
+        // Toggle sidebar expansion on click
+        document.getElementById('sidebar').addEventListener('click', function(event) {
+            if (event.target.tagName.toLowerCase() === 'i') {
+                this.classList.toggle('expanded');
             }
         });
 
-        function sendMessage() {
-            const userInput = document.getElementById("user-input").value.trim();
-            if (userInput) {
-                const chatBox = document.getElementById("chat-box");
-
-                // User message
-                const userMessage = document.createElement("div");
-                userMessage.classList.add("message", "user-message");
-                userMessage.textContent = userInput;
-                chatBox.appendChild(userMessage);
-
-                document.getElementById("user-input").value = "";
-
-                // Fetch bot response
-                fetch("http://localhost:5001/chat", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            message: userInput
-                        }),
-                    })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        let botResponse = data.response;
-
-                        // Remove all `*` symbols from the response
-                        botResponse = botResponse.replace(/\*/g, "");
-
-                        const botMessage = document.createElement("div");
-                        botMessage.classList.add("message", "bot-message");
-
-                        // Split the response into sections
-                        const sections = botResponse.split("\n\n");
-                        sections.forEach((section) => {
-                            if (section.trim()) {
-                                // Separate subheading and its content
-                                const [subheading, ...content] = section.split(":");
-
-                                // Add subheading in bold
-                                const subheadingDiv = document.createElement("div");
-                                subheadingDiv.style.fontWeight = "bold";
-                                subheadingDiv.style.marginBottom = "5px";
-                                subheadingDiv.textContent = subheading.trim();
-                                botMessage.appendChild(subheadingDiv);
-
-                                // Process content to bold any inline headings
-                                const contentDiv = document.createElement("div");
-                                const paragraphs = content.join(":").split("\n");
-                                paragraphs.forEach((paragraph) => {
-                                    const boldHeadingRegex = /^(.*?):(.*)$/; // Matches headings like `Heading: Content`
-                                    const match = boldHeadingRegex.exec(paragraph.trim());
-                                    if (match) {
-                                        const heading = document.createElement("span");
-                                        heading.style.fontWeight = "bold";
-                                        heading.textContent = `${match[1].trim()}: `;
-
-                                        const bodyText = document.createElement("span");
-                                        bodyText.textContent = match[2].trim();
-
-                                        const paragraphDiv = document.createElement("div");
-                                        paragraphDiv.appendChild(heading);
-                                        paragraphDiv.appendChild(bodyText);
-                                        contentDiv.appendChild(paragraphDiv);
-                                    } else {
-                                        const paragraphDiv = document.createElement("div");
-                                        paragraphDiv.textContent = paragraph.trim();
-                                        contentDiv.appendChild(paragraphDiv);
-                                    }
-                                });
-
-                                botMessage.appendChild(contentDiv);
-                            }
-                        });
-
-                        chatBox.appendChild(botMessage);
-
-                        // Add icons (Mic and Copy) for each response
-                        const iconContainer = document.createElement("div");
-                        iconContainer.classList.add("icon-container");
-
-                        // Mic Icon
-                        const micIcon = document.createElementNS(
-                            "http://www.w3.org/2000/svg",
-                            "svg"
-                        );
-                        micIcon.setAttribute("class", "icon");
-                        micIcon.setAttribute("viewBox", "0 0 24 24");
-                        micIcon.innerHTML = `
-                    <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`;
-                        micIcon.onclick = () => toggleSpeech(botResponse, micIcon);
-
-                        // Copy Icon
-                        const copyIcon = document.createElementNS(
-                            "http://www.w3.org/2000/svg",
-                            "svg"
-                        );
-                        copyIcon.setAttribute("class", "icon");
-                        copyIcon.setAttribute("viewBox", "0 0 24 24");
-                        copyIcon.innerHTML = `
-                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`;
-                        copyIcon.onclick = () => copyTextToClipboard(botResponse, copyIcon);
-
-                        iconContainer.appendChild(micIcon);
-                        iconContainer.appendChild(copyIcon);
-
-                        chatBox.appendChild(iconContainer);
-                        chatBox.scrollTop = chatBox.scrollHeight;
-                    })
-                    .catch((error) => console.error("Error:", error));
+        // Function to handle sending messages
+        document.getElementById("send-btn").addEventListener("click", function() {
+            if (isResponseGenerating) {
+                return; // Prevent sending messages if a response is being generated
             }
-        }
 
-        function startSpeechRecognition() {
-            const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "en-US"; // You can change the language
-            recognition.start();
-            recognition.onresult = function(event) {
-                const query = event.results[0][0].transcript;
-                document.getElementById("user-input").value = query; // Put the recognized text in the input box
-                console.log("Recognized: " + query);
-            };
-            recognition.onerror = function(event) {
-                console.error("Speech recognition error", event.error);
-            };
-        }
-        // Button to start speech recognition
-        document.getElementById("mic-btn").addEventListener("click", startSpeechRecognition);
-        // Handle sending user messages and generating bot responses
-        document.getElementById("send-btn").addEventListener("click", sendMessage);
+            const userMessage = document.getElementById("user-input").value;
+            if (userMessage.trim() === "") return; // Don't send empty messages
 
-        let isSpeaking = false; // Flag to track if speech is currently playing
-        let isPaused = false; // Flag to track if speech is paused
-        let utterance = null; // Holds the current speech synthesis utterance
-        function toggleSpeech(text, icon) {
-            if ("speechSynthesis" in window) {
-                // Resume if paused
-                if (isPaused) {
-                    speechSynthesis.resume();
-                    icon.innerHTML = `
-                  <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
-                    isPaused = false;
-                }
-                // Pause if currently speaking
-                else if (isSpeaking) {
-                    speechSynthesis.pause();
-                    icon.innerHTML = `
-                  <path d="M3 10v4h4l5 5V5L7 10H3zm16.59 3.41L19 14l-4-4 1.41-1.41L19 12.59l2.59-2.59L23 10l-4 4z" />`; // Muted speaker icon
-                    isPaused = true;
-                }
-                // Start speaking
-                else {
-                    utterance = new SpeechSynthesisUtterance(text);
+            const chatBox = document.getElementById("chat-box");
+            const userMessageDiv = document.createElement("div");
+            userMessageDiv.className = "message user-message";
+            userMessageDiv.textContent = userMessage;
+            chatBox.appendChild(userMessageDiv);
 
-                    // Get speech speed from slider, default to 1 if not found
-                    const speechSpeedSlider = document.getElementById("speed-slider");
-                    const speechSpeed = speechSpeedSlider ? speechSpeedSlider.value : 1;
-                    utterance.rate = speechSpeed;
-
-                    try {
-                        speechSynthesis.speak(utterance);
-                        isSpeaking = true;
-                        isPaused = false;
-
-                        icon.innerHTML = `
-                    <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Active speaker icon
-
-                        utterance.onend = () => {
-                            isSpeaking = false;
-                            isPaused = false;
-                            icon.innerHTML = `
-                      <path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; // Reset to default icon
-                        };
-                    } catch (error) {
-                        console.error("Error with speech synthesis:", error);
-                    }
-                }
-            } else {
-                console.error("Speech synthesis is not supported in this browser.");
-            }
-        }
-        // Check if the browser supports speech recognition
-        if ("webkitSpeechRecognition" in window) {
-            // Initialize the speech recognition object
-            const recognition = new webkitSpeechRecognition();
-
-            // Set language for recognition
-            recognition.lang = "en-US"; // You can change this to another language if needed
-            recognition.continuous = false; // Stop recognition after one phrase
-            recognition.interimResults = false; // Don't show interim results
-
-            // When the speech recognition result is available
-            recognition.onresult = (event) => {
-                // Get the recognized text (first result from the speech recognition)
-                const userInput = event.results[0][0].transcript;
-
-                // Set the text input to the recognized text
-                document.getElementById("user-input").value = userInput;
-
-                // Optionally, automatically send the message after recognition
-                document.getElementById("send-btn").click();
-            };
-
-            // Handle any errors that occur during speech recognition
-            recognition.onerror = (event) => {
-                console.error("Speech recognition error", event.error);
-            };
-
-            // Start speech recognition when the microphone button is clicked
-            document.getElementById("mike-btn").addEventListener("click", () => {
-                recognition.start(); // Start the speech recognition
+            currentChat.push({
+                type: "user",
+                text: userMessage
             });
-        } else {
-            console.error("Speech recognition is not supported in this browser.");
-        }
-    </script>
+            document.getElementById("user-input").value = ""; // Clear the input field
 
+            // Disable the send button and change its text to "Stop"
+            document.getElementById("send-btn").disabled = true;
+            document.getElementById("stop-btn").style.display = "inline-block"; // Show stop button
+            document.getElementById("send-btn").textContent = "Stop";
+            isResponseGenerating = true;
+
+            // Simulate bot response delay (replace with real bot API call)
+            setTimeout(() => {
+                const botMessage = "Response generated!";
+                const botMessageDiv = document.createElement("div");
+                botMessageDiv.className = "message bot-message";
+                botMessageDiv.textContent = botMessage;
+                chatBox.appendChild(botMessageDiv);
+
+                currentChat.push({
+                    type: "bot",
+                    text: botMessage
+                });
+
+                // Enable the button and reset the text back to "Send"
+                document.getElementById("send-btn").disabled = false;
+                document.getElementById("send-btn").textContent = "Send";
+                document.getElementById("stop-btn").style.display = "none"; // Hide stop button
+                isResponseGenerating = false;
+            }, 3000); // Simulating a 3-second delay
+        });
+
+        // Function to stop response generation
+        document.getElementById("stop-btn").addEventListener("click", function() {
+            // Reset the state to stop the response generation
+            isResponseGenerating = false;
+            document.getElementById("send-btn").disabled = false; // Enable send button again
+            document.getElementById("send-btn").textContent = "Send";
+            document.getElementById("stop-btn").style.display = "none"; // Hide stop button
+        });
+    </script>
 </body>
 
 </html>
+
+<!-- app.py -->
+from flask import Flask, request, jsonify from flask_cors import CORS from flask_mysqldb import MySQL import bcrypt import google.generativeai as genai import requests # Initialize Flask app and enable CORS app = Flask(__name__) CORS(app) # MySQL Configuration
+app.config['MYSQL_HOST'] = '161.97.70.226' # Updated Host app.config['MYSQL_USER'] = 'triforce' # Updated User app.config['MYSQL_PASSWORD'] = 'hSPEm1fpQPMGWzNbVl1e' # Updated Password app.config['MYSQL_DB'] = 'triforcedb' # Updated Database Name app.config['MYSQL_PORT']
+= 3306 # Default MySQL Port # Initialize MySQL mysql = MySQL(app) # Configure the Google Generative AI API GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ" genai.configure(api_key=GOOGLE_API_KEY) model = genai.GenerativeModel('gemini-pro') #
+Store conversation context per user user_context = {} # Pexels API Configuration PEXELS_API_KEY = "WkToHzJ2v1vsqX4YySjkgjqLVfQVFuXoLZY43dvNueysXOKjo8RBnQvo" # Helper function to fetch image from Pexels def fetch_image(query): headers = {"Authorization":
+PEXELS_API_KEY} url = f"https://api.pexels.com/v1/search?query={query}&per_page=1" response = requests.get(url, headers=headers) if response.status_code == 200: data = response.json() if data["photos"]: return data["photos"][0]["src"]["original"] # Return
+the URL of the image return None # Helper function to get a response from the Generative AI model def prompt(user_id, user_input): try: # Initialize context if the user is interacting for the first time if user_id not in user_context: user_context[user_id]
+= [] # Add the user's input to the context user_context[user_id].append(f"User: {user_input}") # Construct the conversation history conversation_history = "\n".join(user_context[user_id]) # Generate response based on the context response = model.generate_content(
+contents=[{"parts": [{"text": conversation_history}]}] ) # Extract the generated response and add it to the context bot_response = response.parts[0].text user_context[user_id].append(f"Bot: {bot_response}") return bot_response except Exception as e: return
+f"Error generating response: {str(e)}" # Route for user registration @app.route("/register", methods=["POST"]) def register(): try: data = request.json email = data.get("email", "").strip() password = data.get("password", "").strip() if not email or not
+password: return jsonify({"error": "Email and password are required"}), 400 # Hash the password hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()) # Insert into the database cur = mysql.connection.cursor() cur.execute("INSERT
+INTO users (email, password) VALUES (%s, %s)", (email, hashed_password)) mysql.connection.commit() cur.close() return jsonify({"message": "User registered successfully!"}), 200 except Exception as e: if "Duplicate entry" in str(e): return jsonify({"error":
+"Email already registered"}), 400 return jsonify({"error": f"An error occurred: {str(e)}"}), 500 # Route for user login @app.route("/login", methods=["POST"]) def login(): try: data = request.json email = data.get("email", "").strip() password = data.get("password",
+"").strip() if not email or not password: return jsonify({"error": "Email and password are required"}), 400 # Check email in the database cur = mysql.connection.cursor() cur.execute("SELECT password FROM users WHERE email = %s", (email,)) result = cur.fetchone()
+cur.close() if result: hashed_password = result[0] # Verify the password if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')): return jsonify({"message": "Login successful!"}), 200 else: return jsonify({"error": "Invalid password"}),
+401 else: return jsonify({"error": "User not found"}), 404 except Exception as e: return jsonify({"error": f"An error occurred: {str(e)}"}), 500 # Define the chatbot endpoint @app.route("/chat", methods=["POST"]) def chat(): try: data = request.json #
+Get the JSON data from the POST request user_message = data.get("message", "").strip() # Extract user message user_id = data.get("user_id", "default") # Use a unique identifier for the user if user_message: # Get the bot's response from the AI model bot_message
+= prompt(user_id, user_message) # Fetch image related to the user message image_url = fetch_image(user_message) else: bot_message = "I didn't understand that. Could you please clarify?" return jsonify({"response": bot_message}) except Exception as e:
+# Handle any unexpected errors return jsonify({"response": f"An error occurred: {str(e)}"}) # Main entry point for running the app if __name__ == '__main__': app.run(host='0.0.0.0', port=5001, debug=True)
+
+<!-- bot.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Chatbot</title>
+    <style>
+        /* General Styles */
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('templates/img/chatbot bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            overflow-x: hidden;
+            color: #fff;
+        }
+        
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            background: #fff;
+            color: #6a11cb;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .btn:hover {
+            transform: scale(1.1);
+            background: #eaeaea;
+        }
+        
+        .hero {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            padding: 60px 20px;
+            text-align: left;
+            height: auto;
+            margin-left: 70%;
+            margin-top: 5%;
+            margin-right: 4%;
+        }
+        
+        .signin-btn,
+        .signup-btn {
+            position: absolute;
+            top: 20px;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .signin-btn {
+            right: 20px;
+            background: #8d49d5;
+        }
+        
+        .signin-btn:hover {
+            background: #540da5;
+        }
+        
+        .signup-btn {
+            right: 110px;
+            background: #6a11cb;
+        }
+        
+        .signup-btn:hover {
+            background: #540da5;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #fff;
+            color: #000;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        
+        .modal-content input,
+        .modal-content button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+        }
+        
+        .modal-content button {
+            background: #6a11cb;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .modal-content button:hover {
+            background: #540da5;
+        }
+        
+        .modal-content .close {
+            background: none;
+            color: #000;
+            font-size: 1.5rem;
+            text-align: right;
+            cursor: pointer;
+            border: none;
+        }
+        /* Toast Notification */
+        
+        #toast {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+        
+        #toast.error {
+            background: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Triforce Chatbot</h1>
+        <p>Your AI companion, always here for you.</p>
+        <button class="btn" onclick="startChat()">Start Chatting</button>
+        <button class="signin-btn" onclick="openModalsignin()">Sign In</button>
+        <button class="signup-btn" onclick="openModalsignup()">Sign Up</button>
+    </header>
+
+    <section class="hero">
+        <p>"Triforce is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts
+            content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth."</p>
+    </section>
+
+    <!-- Modal for Sign-In -->
+    <div id="signinModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModalsignin()">&times;</button>
+            <h2>Sign In</h2>
+            <input type="text" placeholder="E-mail" required>
+            <input type="password" placeholder="Password" required>
+            <button id="signinBtn">Sign In</button>
+        </div>
+    </div>
+
+    <!-- Modal for Sign-Up -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModalsignup()">&times;</button>
+            <h2>Sign Up</h2>
+            <input type="text" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <button id="registerBtn">Register</button>
+        </div>
+    </div>
+
+    <!-- Prompt Modal -->
+    <div id="promptModal" class="modal">
+        <div class="modal-content">
+            <h2>Do you want to sign up or sign in?</h2>
+            <button class="psignin-btn" onclick="redirectToSignIn()">Sign In</button>
+            <button class="psignup-btn" onclick="redirectToSignUp()">Sign Up</button>
+            <button class="close" onclick="closePromptModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast">Action Successful!</div>
+
+    <script>
+        let isUserSignedIn = false; // Track sign-in status
+
+        document.getElementById("registerBtn").addEventListener("click", function() {
+            const email = document.querySelector("#signupModal input[type='text']").value;
+            const password = document.querySelector("#signupModal input[type='password']").value;
+
+            fetch("http://localhost:5001/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        showToast(data.error, true);
+                    } else {
+                        closeModalsignup();
+                        showToast("Registration Successful!");
+                    }
+                })
+                .catch((error) => {
+                    showToast("An error occurred during registration", true);
+                    console.error("Error:", error);
+                });
+        });
+        document.getElementById("signinBtn").addEventListener("click", function() {
+            const email = document.querySelector("#signinModal input[type='text']").value;
+            const password = document.querySelector("#signinModal input[type='password']").value;
+
+            fetch("http://localhost:5001/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password
+                    }),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        showToast(data.error, true);
+                    } else {
+                        showToast("Signed in successfully!");
+                        isUserSignedIn = true; // Update sign-in status
+                        closeModalsignin();
+                        redirectToChatPage(); // Redirect after sign-in
+                    }
+                })
+                .catch((error) => {
+                    showToast("An error occurred during login", true);
+                    console.error("Error:", error);
+                });
+        });
+
+        function startChat() {
+            if (!isUserSignedIn) {
+                openPromptModal(); // Open prompt modal for sign-in/sign-up
+            } else {
+                redirectToChatPage(); // Redirect directly if signed in
+            }
+        }
+
+        function redirectToChatPage() {
+            // Replace 'chat.html' with the actual chat page
+            window.location.href = "templates/index.html";
+        }
+
+        function openPromptModal() {
+            document.getElementById('promptModal').style.display = 'flex';
+        }
+
+        function closePromptModal() {
+            document.getElementById('promptModal').style.display = 'none';
+        }
+
+        function redirectToSignIn() {
+            closePromptModal();
+            openModalsignin();
+        }
+
+        function redirectToSignUp() {
+            closePromptModal();
+            openModalsignup();
+        }
+
+        function openModalsignin() {
+            document.getElementById("signinModal").style.display = "flex";
+        }
+
+        function openModalsignup() {
+            document.getElementById("signupModal").style.display = "flex";
+        }
+
+        function closeModalsignin() {
+            document.getElementById("signinModal").style.display = "none";
+        }
+
+        function closeModalsignup() {
+            document.getElementById("signupModal").style.display = "none";
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = isError ? "error" : "";
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+
+        function closeModalsignup() {
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = isError ? "error" : "";
+            toast.style.display = "block";
+            setTimeout(() => {
+                toast.style.display = "none";
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
+<!-- hSPEm1fpQPMGWzNbVl1e -->
+
+<!-- avator.js -->
+import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module.js"; import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js"; import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js";
+// Create a Three.JS Scene const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera( 60, // Slightly smaller FOV for a slight zoom window.innerWidth / window.innerHeight, 0.1, 10 // Reduce far distance to cut off parts of the avatar
+that are too far away ); // Renderer setup const renderer = new THREE.WebGLRenderer({ alpha: true }); // Alpha allows a transparent background renderer.setSize(window.innerWidth, window.innerHeight); document.getElementById("container3D").appendChild(renderer.domElement);
+// Lights const ambientLight = new THREE.AmbientLight(0x333333, 1); scene.add(ambientLight); const directionalLight = new THREE.DirectionalLight(0xffffff, 1); directionalLight.position.set(10, 10, 10); scene.add(directionalLight); // Orbit controls (keep
+the scene static) const controls = new OrbitControls(camera, renderer.domElement); controls.enableRotate = false; // Prevent rotation controls.enablePan = false; // Prevent panning controls.enableZoom = false; // Prevent zooming controls.update(); //
+Load the .glb file const loader = new GLTFLoader(); let avatar; camera.position.set(0, 1, 2); // Move the camera closer to zoom in (without reducing the avatar size) loader.load( "models/modelkc.glb", // Adjust the path as needed function (gltf) { avatar
+= gltf.scene; avatar.scale.set(2, 2, 1); // Keep the avatar's scale unchanged (do not reduce size) avatar.position.set(0, -1.5, 0); // Move the avatar lower so only the legs are visible // Optional: Focus the camera on the legs by adjusting position and
+angle scene.add(avatar); }, function (xhr) { console.log((xhr.loaded / xhr.total) * 100 + "% loaded"); }, function (error) { console.error("An error occurred:", error); } ); // Resize handling window.addEventListener("resize", function () { camera.aspect
+= window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }); // Render the scene function animate() { requestAnimationFrame(animate); // Render the scene renderer.render(scene,
+camera); } animate();
+
+<!-- send message.js -->
+let isSpeaking = false; // Flag to track if speech is currently playing let utterance = null; // Holds the current speech synthesis utterance // Function to handle text copying to clipboard function copyTextToClipboard(text, copyIcon) { navigator.clipboard
+.writeText(text) .then(() => { const originalIcon = copyIcon.innerHTML; // Save the original icon copyIcon.innerHTML = `
+<path d="M9 16.17l-4.17-4.17-1.41 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />`; // Tick icon setTimeout(() => { copyIcon.innerHTML = originalIcon; // Restore the original icon after 5 seconds }, 5000); }) .catch((err) => console.error("Error copying text:", err)); } // Function to send a message function sendMessage() { const
+userInput = document.getElementById("user-input").value.trim(); if (userInput) { const chatBox = document.getElementById("chat-box"); // Create and display the user message const userMessage = document.createElement("div"); userMessage.classList.add("message",
+"user-message"); userMessage.textContent = userInput; chatBox.appendChild(userMessage); document.getElementById("user-input").value = ""; // Clear input field // Fetch the bot response from the server fetch("http://localhost:5001/chat", { method: "POST",
+headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user_id: "unique_user_id", // Replace with actual user ID logic if needed message: userInput, }), }) .then((response) => response.json()) .then((data) => { let botResponse = data.response;
+// Remove all `*` symbols from the response botResponse = botResponse.replace(/\*/g, ""); // Check for code block const codeMatch = botResponse.match(/```([\s\S]*?)```/); if (codeMatch) { const codeContent = codeMatch[1]; // Extract the code block //
+Display code in a styled container const codeContainer = document.createElement("div"); codeContainer.classList.add("code-container"); // Add a preformatted block for the code const codeBlock = document.createElement("pre"); codeBlock.textContent = codeContent;
+// Add a copy icon const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg"); copyIcon.setAttribute("class", "icon"); copyIcon.setAttribute("viewBox", "0 0 24 24"); copyIcon.innerHTML = `
+<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z"
+/>`; copyIcon.classList.add("copy-icon"); copyIcon.onclick = () => copyTextToClipboard(codeContent, copyIcon); codeContainer.appendChild(codeBlock); codeContainer.appendChild(copyIcon); chatBox.appendChild(codeContainer); } else { const botMessage = document.createElement("div");
+botMessage.classList.add("message", "bot-message"); // Split response into sections and display const sections = botResponse.split("\n\n"); sections.forEach((section) => { if (section.trim()) { const [subheading, ...content] = section.split(":"); // Add
+subheading in bold const subheadingDiv = document.createElement("div"); subheadingDiv.style.fontWeight = "bold"; subheadingDiv.textContent = subheading.trim(); botMessage.appendChild(subheadingDiv); // Add content with headings highlighted const contentDiv
+= document.createElement("div"); content.join(":").split("\n").forEach((paragraph) => { const match = /^(.*?):(.*)$/.exec(paragraph.trim()); if (match) { const heading = document.createElement("span"); heading.style.fontWeight = "bold"; heading.textContent
+= `${match[1].trim()}: `; const bodyText = document.createElement("span"); bodyText.textContent = match[2].trim(); const paragraphDiv = document.createElement("div"); paragraphDiv.appendChild(heading); paragraphDiv.appendChild(bodyText); contentDiv.appendChild(paragraphDiv);
+} else { const paragraphDiv = document.createElement("div"); paragraphDiv.textContent = paragraph.trim(); contentDiv.appendChild(paragraphDiv); } }); botMessage.appendChild(contentDiv); } }); chatBox.appendChild(botMessage); // Add mic and copy icons
+const iconContainer = document.createElement("div"); iconContainer.classList.add("icon-container"); // Mic Icon const micIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg"); micIcon.setAttribute("class", "icon"); micIcon.setAttribute("viewBox",
+"0 0 24 24"); micIcon.innerHTML = `
+<path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`; micIcon.onclick = () => toggleSpeech(botResponse, micIcon); // Copy Icon const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg"); copyIcon.setAttribute("class", "icon"); copyIcon.setAttribute("viewBox", "0 0 24 24"); copyIcon.innerHTML
+= `
+<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`; copyIcon.onclick = () => copyTextToClipboard(botResponse, copyIcon); iconContainer.appendChild(micIcon); iconContainer.appendChild(copyIcon); chatBox.appendChild(iconContainer); } chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom }) .catch((error)
+=> console.error("Error:", error)); } } // Function to toggle speech and highlight words function toggleSpeech(text, messageElement) { if ("speechSynthesis" in window) { if (isSpeaking) { speechSynthesis.cancel(); isSpeaking = false; } else { const words
+= text.split(" "); let wordIndex = 0; function speakAndHighlight() { if (wordIndex
+< words.length) { const word=w ords[wordIndex]; messageElement.innerHTML=t ext.replace(word, `<b>${word}</b>`); utterance = new SpeechSynthesisUtterance(word); speechSynthesis.speak(utterance); utterance.onend = () => { wordIndex++; speakAndHighlight(); }; } else { isSpeaking = false; } } speakAndHighlight(); isSpeaking = true; } } } // Add event
+    listeners for input and send button document.getElementById("send-btn").addEventListener("click", sendMessage); document.getElementById("user-input").addEventListener("keydown", (event) => { if (event.key === "Enter") sendMessage(); });
+
+    <!-- speechtotext -->
+    // Initialize variables for speech synthesis let isSpeaking = false; let isPaused = false; let utterance = null; // Function to toggle speech synthesis (speak or pause/resume) function toggleSpeech(text, icon) { if ("speechSynthesis" in window) { // Resume
+    if paused if (isPaused) { speechSynthesis.resume(); icon.innerHTML = `🎙️`; // Active speaker icon isPaused = false; } // Pause if currently speaking else if (isSpeaking) { speechSynthesis.pause(); icon.innerHTML = `🔇`; // Muted speaker icon isPaused
+    = true; } // Start speaking else { utterance = new SpeechSynthesisUtterance(text); // Set speech speed from slider, default to 1 const speechSpeedSlider = document.getElementById("speed-slider"); const speechSpeed = speechSpeedSlider ? speechSpeedSlider.value
+    : 1; utterance.rate = speechSpeed; // Speak the text speechSynthesis.speak(utterance); isSpeaking = true; // Mark as speaking icon.innerHTML = `🎙️`; // Active speaker icon } utterance.onend = function () { isSpeaking = false; // Reset speaking state
+    when speech ends icon.innerHTML = `🎙️`; // Reset icon to default }; } } // Handling Speech Recognition (for Mic button) const micBtn = document.getElementById("mic-btn"); let isRecognizing = false; // Track the recognition state if ("webkitSpeechRecognition"
+    in window) { const recognition = new webkitSpeechRecognition(); recognition.continuous = true; recognition.interimResults = true; recognition.onstart = function () { micBtn.textContent = "🔴"; // Show red mic when recording isRecognizing = true; };
+    recognition.onend = function () { micBtn.textContent = "🎙️"; // Show normal mic when stopped isRecognizing = false; }; recognition.onresult = function (event) { let transcript = ""; for (let i = event.resultIndex; i
+    < event.results.length; i++)
+        { transcript +=e vent.results[i][0].transcript; } // Send the transcript to the input box document.getElementById( "user-input").value=t ranscript; }; micBtn.addEventListener( "click", function () { // Toggle recognition state if (isRecognizing) {
+        recognition.stop(); // Stop recognition } else { recognition.start(); // Start recognition } }); } else { console.log( "Speech recognition is not supported in this browser."); }
