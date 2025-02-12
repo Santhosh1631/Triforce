@@ -104,7 +104,7 @@
         <li><i class="fas fa-cogs"></i> Customize ZenBot</li>
         <li><i class="fas fa-history"></i> History</li>
         <li><i class="fas fa-phone"></i> Contact Us</li>
-        <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+        <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
       </ul>
     </div>
   </div>
@@ -150,6 +150,9 @@
       const index = username ? username.charCodeAt(0) % avatars.length : 0;
       return avatars[index];
     }
+    function logout() {
+  window.location.href = "templates/static/bot.html"; // Redirect to bot.html after logout
+}
 
     document.addEventListener("DOMContentLoaded", function() {
       const username = "User"; // Replace this with the actual username logic
