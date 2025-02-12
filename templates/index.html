@@ -3,40 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avatar Chat with Sidebar</title>
+  <title>Avatar Chat with Profile Menu</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="static/styles.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
     
-
     body {
-  margin: 0;
-  font-family: 'Lexend', sans-serif;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(-45deg, 
-    #1E293B, #1E40AF, #2563EB, #4F46E5, #6D28D9, 
-    #9333EA, #A21CAF, #C026D3, #5a316d, #D946EF, 
-    #48274c, #785088, #a6b4ee
-  );
-  background-size: 500% 500%;
-  animation: gradientShift 10s ease-in-out infinite;
-  color: #ffffff;
-}
+      margin: 0;
+      font-family: 'Lexend', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      align-items: center;
+      background-image: url('img/kesikabg3.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  25% { background-position: 25% 55%; } /* More even transition */
-  50% { background-position: 50% 45%; } /* Balanced movement */
-  75% { background-position: 75% 50%; } /* Smooth shift */
-  100% { background-position: 100% 50%; } /* Reset */
-}
-
-
-
-    /* Main layout with avatar and chat */
     .main-container {
       display: flex;
       width: 100%;
@@ -49,122 +34,82 @@
     }
 
     .chat-container {
-      width: 66%; /* Adjusting for sidebar width */
+      width: 66%;
       display: flex;
       flex-direction: column;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 60px; /* Initial collapsed width */
-      background-color: rgba(255, 255, 255, 0);
-      color: black;
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-around;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
-      transition: width 0.3s ease;
-    }
-    .sidebar.expanded {
-      width: 200px; /* Expanded width */
-    }
-    /* Sidebar icons */
-    .sidebar i {
-      font-size: 2rem;
-      cursor: pointer;
-      margin: 15px 0;
-    }
-
-    .sidebar i:hover {
-      color: #00bcd4;
-    }
-
-    /* Sidebar text */
-    .sidebar .menu-item {
-      display: none;
-      font-size: 1rem;
-    }
-
-    .sidebar.expanded .menu-item {
-      display: block; /* Show text when expanded */
-    }
-    .sidebar ul {
-      list-style-type: none; /* Removes the dots */
-      padding: 0; /* Removes default padding */
-      margin: 0; /* Removes default margin */
-    }
-
-    /* Content Panel */
-    .content-panel {
-      position: fixed;
-      top: 0;
-      right: -100%; /* Fully hides the panel when closed */
-      width: 15%; /* Adjust width as needed */
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.9);
-      color: black;
-      box-shadow: -px 0 5px rgba(0, 0, 0, 0.3);
-      padding: 10px;
-      overflow-y: auto;
-      transition: right 0.3s ease-in-out;
-    }
-
-    .content-panel h2 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-
-    .content-panel p {
-      font-size: 0.9rem;
-      line-height: 1.5;
-    }
-
-    .content-panel .close-btn {
+    .profile-menu {
       position: absolute;
       top: 10px;
-      right: 10px;
-      font-size: 1.2rem;
+      right: 20px;
       cursor: pointer;
-      color: #333;
-    }
-    .icon-container {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-left: 10px;
     }
 
-    .content-panel .close-btn:hover {
-      color: red;
+    .profile-icon {
+      font-size: 24px;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 50%;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      width: 200px;
+    }
+
+    .menu-dropdown ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu-dropdown ul li {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .menu-dropdown ul li:last-child {
+      border-bottom: none;
+    }
+
+    .menu-dropdown ul li i {
+      margin-right: 10px;
+      color: #555;
+    }
+
+    .menu-dropdown ul li:hover {
+      background: #f5f5f5;
     }
   </style>
 </head>
 <body>
-  <div class="main-container">
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+  <div class="profile-menu" onclick="toggleMenu()">
+    <i id="dynamicProfileIcon" class="fas fa-user profile-icon"></i>
+    <div class="menu-dropdown" id="menuDropdown">
       <ul>
-        <li>
-          <i class="fas fa-history" title="History" onclick="showContent('History', 'Here you can view your chat history.')"></i>
-          <span class="menu-item">History</span>
-        </li>
-        <li>
-          <i class="fas fa-cog" title="Settings" onclick="showContent('Settings', 'Adjust your chatbot settings here.')"></i>
-          <span class="menu-item">Settings</span>
-        </li>
-        <li>
-          <i class="fas fa-question-circle" title="Help" onclick="showContent('Help', 'Find FAQs and support information here.')"></i>
-          <span class="menu-item">Help</span>
-        </li>
+        <li><i class="fas fa-user"></i> Username</li>
+        <li><i class="fas fa-envelope"></i> Mail ID</li>
+        <li><i class="fas fa-cogs"></i> Customize ZenBot</li>
+        <li><i class="fas fa-history"></i> History</li>
+        <li><i class="fas fa-phone"></i> Contact Us</li>
+        <li><i class="fas fa-sign-out-alt"></i> Logout</li>
       </ul>
     </div>
+  </div>
 
-    <!-- Avatar and Chat Containers -->
+  <div class="main-container">
     <div class="avatar-container">
       <div id="container3D"></div>
     </div>
@@ -172,10 +117,6 @@
       <div class="chat-box" id="chat-box" type="text">
         <div class="message bot-message">
           <div class="response-title">Hi! How can I assist you today?</div>
-          <ul class="response-points">
-            <li>Option 1: Ask for assistance</li>
-            <li>Option 2: Learn more about the chatbot</li>
-          </ul>
         </div>
       </div>
       <div class="input-container">
@@ -187,148 +128,33 @@
     </div>
   </div>
 
-  <!-- Content Panel -->
-  <div class="content-panel" id="content-panel">
-    <i class="fas fa-times close-btn" onclick="closeContentPanel()"></i>
-    <h2 id="content-title"></h2>
-    <div id="content-text">
-      <!-- Chat history will be dynamically rendered here -->
-    </div>
-  </div>
-
   <script type="module" src="js/avator.js"></script>
   <script type="module" src="js/send_message.js"></script>
   <script type="module" src="js/speechtotext.js"></script>
   <script>
-    // Sample savedChats data for testing
-    const savedChats = [
-      { name: 'Chat 1', messages: [{ type: 'bot', text: 'Hello!' }, { type: 'user', text: 'Hi there!' }] },
-      { name: 'Chat 2', messages: [{ type: 'bot', text: 'How can I help?' }, { type: 'user', text: 'I need assistance.' }] }
-    ];
-
-    let currentChat = [];  // Store the current chat's messages
-    let isResponseGenerating = false;  // Flag to track if a response is being generated
-
-    // Show content panel with title and text
-    function showContent(title, text) {
-      const contentPanel = document.getElementById("content-panel");
-      const contentTitle = document.getElementById("content-title");
-      const contentText = document.getElementById("content-text");
-
-      contentTitle.textContent = title;
-
-      if (title === "History") {
-        let historyHTML = "<ul>";
-        savedChats.forEach((chat, index) => {
-          historyHTML += `
-            <li>
-              <span onclick="loadChatFromHistory(${index})">${chat.name}</span>
-              <span class="delete-btn" onclick="deleteChat(${index}, event)">✖</span>
-            </li>`;
-        });
-        historyHTML += "</ul>";
-        contentText.innerHTML = historyHTML;
-      } else {
-        contentText.textContent = text;
-      }
-
-      contentPanel.style.right = "0";
+    function toggleMenu() {
+      var menu = document.getElementById("menuDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    // Load chat history and display the messages
-    function loadChatFromHistory(index) {
-      const chat = savedChats[index];
-      const chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML = "";  // Clear current chat display
-
-      chat.messages.forEach((message) => {
-        const messageDiv = document.createElement("div");
-        messageDiv.className = message.type === "bot" ? "message bot-message" : "message user-message";
-        messageDiv.textContent = message.text;
-        chatBox.appendChild(messageDiv);
-      });
-
-      closeContentPanel();
-    }
-
-    // Close the content panel
-    function closeContentPanel() {
-      const contentPanel = document.getElementById('content-panel');
-      contentPanel.style.right = '-100%';
-    }
-
-    // Save current chat
-    function saveCurrentChat() {
-      const chatName = `Chat ${savedChats.length + 1}`;
-      savedChats.push({ name: chatName, messages: [...currentChat] });
-      alert("Chat saved successfully!");
-    }
-
-    // Start a new chat
-    function startNewChat() {
-      saveCurrentChat();
-      currentChat = [];
-      const chatBox = document.getElementById("chat-box");
-      chatBox.innerHTML = "";  
-      document.getElementById("user-input").value = "";
-    }
-
-    // Toggle sidebar expansion on click
-    document.getElementById('sidebar').addEventListener('click', function (event) {
-      if (event.target.tagName.toLowerCase() === 'i') {
-        this.classList.toggle('expanded');
+    document.addEventListener("click", function(event) {
+      var profileMenu = document.querySelector(".profile-menu");
+      var menu = document.getElementById("menuDropdown");
+      if (!profileMenu.contains(event.target)) {
+        menu.style.display = "none";
       }
     });
 
-    // Function to handle sending messages
-    document.getElementById("send-btn").addEventListener("click", function() {
-      if (isResponseGenerating) {
-        return; // Prevent sending messages if a response is being generated
-      }
+    function generateAvatarIcon(username) {
+      const avatars = ["fa-user", "fa-user-ninja", "fa-user-secret", "fa-user-astronaut", "fa-user-tie"];
+      const index = username ? username.charCodeAt(0) % avatars.length : 0;
+      return avatars[index];
+    }
 
-      const userMessage = document.getElementById("user-input").value;
-      if (userMessage.trim() === "") return; // Don't send empty messages
-
-      const chatBox = document.getElementById("chat-box");
-      const userMessageDiv = document.createElement("div");
-      userMessageDiv.className = "message user-message";
-      userMessageDiv.textContent = userMessage;
-      chatBox.appendChild(userMessageDiv);
-
-      currentChat.push({ type: "user", text: userMessage });
-      document.getElementById("user-input").value = "";  // Clear the input field
-
-      // Disable the send button and change its text to "Stop"
-      document.getElementById("send-btn").disabled = true;
-      document.getElementById("stop-btn").style.display = "inline-block"; // Show stop button
-      document.getElementById("send-btn").textContent = "Stop";
-      isResponseGenerating = true;
-
-      // Simulate bot response delay (replace with real bot API call)
-      setTimeout(() => {
-        const botMessage = "Response generated!";
-        const botMessageDiv = document.createElement("div");
-        botMessageDiv.className = "message bot-message";
-        botMessageDiv.textContent = botMessage;
-        chatBox.appendChild(botMessageDiv);
-
-        currentChat.push({ type: "bot", text: botMessage });
-
-        // Enable the button and reset the text back to "Send"
-        document.getElementById("send-btn").disabled = false;
-        document.getElementById("send-btn").textContent = "Send";
-        document.getElementById("stop-btn").style.display = "none"; // Hide stop button
-        isResponseGenerating = false;
-      }, 3000); // Simulating a 3-second delay
-    });
-
-    // Function to stop response generation
-    document.getElementById("stop-btn").addEventListener("click", function() {
-      // Reset the state to stop the response generation
-      isResponseGenerating = false;
-      document.getElementById("send-btn").disabled = false; // Enable send button again
-      document.getElementById("send-btn").textContent = "Send";
-      document.getElementById("stop-btn").style.display = "none"; // Hide stop button
+    document.addEventListener("DOMContentLoaded", function() {
+      const username = "User"; // Replace this with the actual username logic
+      const avatarIcon = generateAvatarIcon(username);
+      document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
     });
   </script>
 </body>
