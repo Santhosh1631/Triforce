@@ -92,6 +92,69 @@
     .menu-dropdown ul li:hover {
       background: #f5f5f5;
     }
+
+    /* Customize ZenBot Popup */
+    .customize-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: 300px;
+    }
+
+    .customize-popup h3 {
+      margin: 0 0 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .customize-popup label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .customize-popup select,
+    .customize-popup input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .customize-popup button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .customize-popup button:hover {
+      background: #0056b3;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
@@ -101,12 +164,35 @@
       <ul>
         <li><i class="fas fa-user"></i> Username</li>
         <li><i class="fas fa-envelope"></i> Mail ID</li>
-        <li><i class="fas fa-cogs"></i> Customize ZenBot</li>
+        <li onclick="openCustomizePopup()"><i class="fas fa-cogs"></i> Customize ZenBot</li>
         <li><i class="fas fa-history"></i> History</li>
         <li><i class="fas fa-phone"></i> Contact Us</li>
         <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
       </ul>
     </div>
+  </div>
+
+  <!-- Customize ZenBot Popup -->
+  <div class="overlay" id="overlay"></div>
+  <div class="customize-popup" id="customizePopup">
+    <h3>Customize ZenBot</h3>
+    <label for="fontSelect">Font:</label>
+    <select id="fontSelect" onchange="changeFont()">
+      <option value="Verdana, sans-serif">Verdana</option>
+      <option value="OpenDyslexic, sans-serif">OpenDyslexic</option>
+      <option value="Sans, sans-serif">Sans</option>
+      <option value="Roboto, sans-serif">Roboto</option>
+      <option value="Helvetica, sans-serif">Helvetica</option>
+    </select>
+    <label for="fontSize">Font Size:</label>
+    <input type="number" id="fontSize" min="10" max="50" value="14">
+    <label for="lineSpacing">Line Spacing:</label>
+<input type="number" id="lineSpacing" min="1" max="3" step="0.1" value="1.5">
+
+<label for="letterSpacing">Letter Spacing:</label>
+<input type="number" id="letterSpacing" min="0" max="5" step="0.1" value="0">
+
+    <button onclick="applyCustomization()">Apply</button>
   </div>
 
   <div class="main-container">
@@ -150,15 +236,51 @@
       const index = username ? username.charCodeAt(0) % avatars.length : 0;
       return avatars[index];
     }
+
     function logout() {
-  window.location.href = "templates/static/bot.html"; // Redirect to bot.html after logout
-}
+      window.location.href = "templates/static/bot.html"; // Redirect to bot.html after logout
+    }
+
+    function openCustomizePopup() {
+      document.getElementById("customizePopup").style.display = "block";
+      document.getElementById("overlay").style.display = "block";
+    }
+
+    function applyCustomization() {
+      const font = document.getElementById("fontSelect").value;
+      const fontSize = document.getElementById("fontSize").value + "px";
+      document.body.style.fontFamily = font;
+      document.body.style.fontSize = fontSize;
+      closeCustomizePopup();
+    }
+
+    function closeCustomizePopup() {
+      document.getElementById("customizePopup").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+    }
 
     document.addEventListener("DOMContentLoaded", function() {
       const username = "User"; // Replace this with the actual username logic
       const avatarIcon = generateAvatarIcon(username);
       document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
     });
+
+    function applyCustomization() {
+  const font = document.getElementById("fontSelect").value;
+  const fontSize = document.getElementById("fontSize").value + "px";
+  const lineSpacing = document.getElementById("lineSpacing").value + "em";
+  const letterSpacing = document.getElementById("letterSpacing").value + "px";
+
+  document.body.style.fontFamily = font;
+  document.body.style.fontSize = fontSize;
+  document.body.style.lineHeight = lineSpacing;
+  document.body.style.letterSpacing = letterSpacing;
+
+  closeCustomizePopup();
+}
+
+    // Close popup when clicking outside
+    document.getElementById("overlay").addEventListener("click", closeCustomizePopup);
   </script>
 </body>
 </html>
