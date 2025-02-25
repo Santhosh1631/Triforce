@@ -123,7 +123,7 @@ function sendMessage() {
           micIcon.setAttribute("class", "icon");
           micIcon.setAttribute("viewBox", "0 0 24 24");
           micIcon.innerHTML = `<path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`;
-          micIcon.onclick = () => toggleSpeech(botResponse, micIcon);
+          micIcon.onclick = () => toggleSpeech(botResponse, botMessage);
 
           // Copy Icon
           const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -149,13 +149,84 @@ function toggleSpeech(text, messageElement) {
       speechSynthesis.cancel();
       isSpeaking = false;
     } else {
-      const words = text.split(" ");
+      const sections = messageElement.children;
+
       let wordIndex = 0;
+      let sectionIndex = 0;
+      let sectionContent = "";
+      let words = [];
+      let wordPositions = [];
+
+      // Function to extract words and their positions from sections
+      function extractWords() {
+        if (sectionIndex < sections.length) {
+          const section = sections[sectionIndex];
+          if (section.children) {
+            for (const child of section.children) {
+              if (child.textContent) {
+                const childWords = child.textContent.split(" ");
+                for (let i = 0; i < childWords.length; i++) {
+                  words.push(childWords[i]);
+                  wordPositions.push({ section: sectionIndex, child: child, index: i });
+                }
+              }
+            }
+            sectionIndex++;
+            extractWords();
+          } else {
+            const sectionWords = section.textContent.split(" ");
+            for (let i = 0; i < sectionWords.length; i++) {
+              words.push(sectionWords[i]);
+              wordPositions.push({ section: sectionIndex, child: null, index: i });
+            }
+            return;
+          }
+        }
+      }
+
+      extractWords();
+
+      // Reset any existing highlights
+      for (const section of sections) {
+        if (section.children) {
+          for (const child of section.children) {
+            if (child.innerHTML.includes("<b>")) {
+              child.innerHTML = child.textContent;
+            }
+          }
+        } else if (section.innerHTML.includes("<b>")) {
+          section.innerHTML = section.textContent;
+        }
+      }
 
       function speakAndHighlight() {
         if (wordIndex < words.length) {
           const word = words[wordIndex];
-          messageElement.innerHTML = text.replace(word, `<b>${word}</b>`);
+          const position = wordPositions[wordIndex];
+
+          // Reset any existing highlights
+          for (const section of sections) {
+            if (section.children) {
+              for (const child of section.children) {
+                if (child.innerHTML.includes("<b>")) {
+                  child.innerHTML = child.textContent;
+                }
+              }
+            } else if (section.innerHTML.includes("<b>")) {
+              section.innerHTML = section.textContent;
+            }
+          }
+
+          // Highlight the current word
+          if (position.child) {
+            const childWords = position.child.textContent.split(" ");
+            childWords[position.index] = `<b>${childWords[position.index]}</b>`;
+            position.child.innerHTML = childWords.join(" ");
+          } else {
+            const sectionWords = sections[position.section].textContent.split(" ");
+            sectionWords[position.index] = `<b>${sectionWords[position.index]}</b>`;
+            sections[position.section].innerHTML = sectionWords.join(" ");
+          }
 
           utterance = new SpeechSynthesisUtterance(word);
           speechSynthesis.speak(utterance);
@@ -174,6 +245,7 @@ function toggleSpeech(text, messageElement) {
     }
   }
 }
+
 
 // Add event listeners for input and send button
 document.getElementById("send-btn").addEventListener("click", sendMessage);

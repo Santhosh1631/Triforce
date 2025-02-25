@@ -146,65 +146,89 @@
     }
 
     .overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
-  z-index: 999;
-}
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+    }
 
-.contact-popup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  text-align: center;
-  font-family: "Poppins", sans-serif;
-  min-width: 280px;
-  max-width: 340px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
+    .contact-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #ffffff, #f8f9fa);
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      text-align: center;
+      font-family: "Poppins", sans-serif;
+      min-width: 280px;
+      max-width: 340px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
 
-.contact-popup h2 {
-  margin-bottom: 12px;
-  color: #333;
-  font-size: 22px;
-  font-weight: 600;
-}
+    .contact-popup h2 {
+      margin-bottom: 12px;
+      color: #333;
+      font-size: 22px;
+      font-weight: 600;
+    }
 
-.contact-popup p {
-  margin: 6px 0;
-  font-size: 16px;
-  color: #444;
-  font-weight: 500;
-  background: linear-gradient(120deg, #007bff, #0056b3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
-}
+    .contact-popup p {
+      margin: 6px 0;
+      font-size: 16px;
+      color: #444;
+      font-weight: 500;
+      background: linear-gradient(120deg, #007bff, #0056b3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
 
-.contact-popup p a {
-  text-decoration: none;
-  font-weight: bold;
-  color: inherit;
-  transition: all 0.3s ease;
-}
+    .contact-popup p a {
+      text-decoration: none;
+      font-weight: bold;
+      color: inherit;
+      transition: all 0.3s ease;
+    }
 
-.contact-popup p a:hover {
-  opacity: 0.8;
-}
+    .contact-popup p a:hover {
+      opacity: 0.8;
+    }
 
-  
+    .word {
+      transition: background-color 0.3s ease;
+    }
+
+    .highlight {
+      background-color: #ffeb3b; /* Bright yellow background */
+      color: #000; /* Black text for contrast */
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-weight: bold;
+      animation: highlight-pulse 1s infinite; /* Pulsing animation */
+    }
+
+    /* Pulsing animation for highlighted words */
+    @keyframes highlight-pulse {
+      0% {
+        background-color: #ffeb3b;
+      }
+      50% {
+        background-color: #ffcc80; /* Slightly darker yellow */
+      }
+      100% {
+        background-color: #ffeb3b;
+      }
+    }
   </style>
 </head>
 <body>
@@ -237,31 +261,22 @@
     <label for="fontSize">Font Size:</label>
     <input type="number" id="fontSize" min="10" max="50" value="14">
     <label for="lineSpacing">Line Spacing:</label>
-<input type="number" id="lineSpacing" min="1" max="3" step="0.1" value="1.5">
-
-<label for="letterSpacing">Letter Spacing:</label>
-<input type="number" id="letterSpacing" min="0" max="5" step="0.1" value="0">
-
+    <input type="number" id="lineSpacing" min="1" max="3" step="0.1" value="1.5">
+    <label for="letterSpacing">Letter Spacing:</label>
+    <input type="number" id="letterSpacing" min="0" max="5" step="0.1" value="0">
     <button onclick="applyCustomization()">Apply</button>
   </div>
-  <div class="overlay" id="contactOverlay" onclick="closeContactPopup()"></div>
 
   <!-- Contact Us Popup -->
-<div class="overlay" id="contactOverlay" onclick="closeContactPopup()"></div>
-
-<div class="contact-popup" id="contactPopup">  <!-- Add id="contactPopup" -->
-  <h2>Get in Touch</h2>
-  <p>We'd love to hear from you! Reach out to us anytime.</p>
-  
-  <p><strong>Email:</strong> <a href="mailto: example@mail.com">example@mail.com</a></p>
-  <p><strong>Phone:</strong> <a href="tel: +1234567890">+123 456 7890</a></p>
-
-  <p class="small-text">Available 24/7 for your queries.</p>
-  <button onclick="closeContactPopup()">Close</button> <!-- Add Close Button -->
-</div>
-
-
-  
+  <div class="overlay" id="contactOverlay" onclick="closeContactPopup()"></div>
+  <div class="contact-popup" id="contactPopup">
+    <h2>Get in Touch</h2>
+    <p>We'd love to hear from you! Reach out to us anytime.</p>
+    <p><strong>Email:</strong> <a href="mailto:example@mail.com">example@mail.com</a></p>
+    <p><strong>Phone:</strong> <a href="tel:+1234567890">+123 456 7890</a></p>
+    <p class="small-text">Available 24/7 for your queries.</p>
+    <button onclick="closeContactPopup()">Close</button>
+  </div>
 
   <div class="main-container">
     <div class="avatar-container">
@@ -285,6 +300,7 @@
   <script type="module" src="js/avator.js"></script>
   <script type="module" src="js/send_message.js"></script>
   <script type="module" src="js/speechtotext.js"></script>
+  <script type="module" src="highlight.js"></script>
   <script>
     function toggleMenu() {
       var menu = document.getElementById("menuDropdown");
@@ -317,8 +333,14 @@
     function applyCustomization() {
       const font = document.getElementById("fontSelect").value;
       const fontSize = document.getElementById("fontSize").value + "px";
+      const lineSpacing = document.getElementById("lineSpacing").value + "em";
+      const letterSpacing = document.getElementById("letterSpacing").value + "px";
+
       document.body.style.fontFamily = font;
       document.body.style.fontSize = fontSize;
+      document.body.style.lineHeight = lineSpacing;
+      document.body.style.letterSpacing = letterSpacing;
+
       closeCustomizePopup();
     }
 
@@ -333,36 +355,22 @@
       document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
     });
 
-    function applyCustomization() {
-  const font = document.getElementById("fontSelect").value;
-  const fontSize = document.getElementById("fontSize").value + "px";
-  const lineSpacing = document.getElementById("lineSpacing").value + "em";
-  const letterSpacing = document.getElementById("letterSpacing").value + "px";
-
-  document.body.style.fontFamily = font;
-  document.body.style.fontSize = fontSize;
-  document.body.style.lineHeight = lineSpacing;
-  document.body.style.letterSpacing = letterSpacing;
-
-  closeCustomizePopup();
-}
-
-    // Close popup when clicking outside
-    document.getElementById("overlay").addEventListener("click", closeCustomizePopup);
     function openContactPopup() {
-    document.getElementById("contactPopup").style.display = "block";
-    document.getElementById("contactOverlay").style.display = "block";
-  }
-  function closeContactPopup() {
-    document.getElementById("contactPopup").style.display = "none";
-    document.getElementById("contactOverlay").style.display = "none";
-  }
-  function copyToClipboard(id) {
-    const text = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      alert("Copied: " + text);
-    });
-  }
+      document.getElementById("contactPopup").style.display = "block";
+      document.getElementById("contactOverlay").style.display = "block";
+    }
+
+    function closeContactPopup() {
+      document.getElementById("contactPopup").style.display = "none";
+      document.getElementById("contactOverlay").style.display = "none";
+    }
+
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied: " + text);
+      });
+    }
   </script>
 </body>
 </html>
