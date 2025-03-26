@@ -118,9 +118,6 @@ def chat():
         if user_message:
             # Get the bot's response from the AI model
             bot_message = prompt(user_id, user_message)
-            
-            # Fetch image related to the user message
-            image_url = fetch_image(user_message)
         else:
             bot_message = "I didn't understand that. Could you please clarify?"
         
