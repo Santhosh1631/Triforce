@@ -4,6 +4,7 @@ from flask_mysqldb import MySQL
 import bcrypt
 import google.generativeai as genai
 import requests
+import os
 
 # Initialize Flask app and enable CORS
 app = Flask(__name__)
@@ -18,29 +19,14 @@ app.config['MYSQL_PORT'] = 3306  # Default MySQL Port
 
 # Initialize MySQL
 mysql = MySQL(app)
-
 # Configure the Google Generative AI API
-GOOGLE_API_KEY = "AIzaSyDGAZHwvEA-mSeKyJB7iOuj9bUWKe-oPcQ"
+GOOGLE_API_KEY = "AIzaSyDrcKRDLBYVhuI813-ryCqCx4Jeazyjx44"
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-pro')  # or any listed model
+
 
 # Store conversation context per user
 user_context = {}
-
-# Pexels API Configuration
-PEXELS_API_KEY = "WkToHzJ2v1vsqX4YySjkgjqLVfQVFuXoLZY43dvNueysXOKjo8RBnQvo"
-
-# Helper function to fetch image from Pexels
-def fetch_image(query):
-    headers = {"Authorization": PEXELS_API_KEY}
-    url = f"https://api.pexels.com/v1/search?query={query}&per_page=1"
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        data = response.json()
-        if data["photos"]:
-            return data["photos"][0]["src"]["original"]  # Return the URL of the image
-    return None
-
 # Helper function to get a response from the Generative AI model
 def prompt(user_id, user_input):
     try:

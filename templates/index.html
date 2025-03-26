@@ -153,56 +153,12 @@
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(4px);
+      /* backdrop-filter: blur(4px); */
       z-index: 999;
     }
 
-    .contact-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, #ffffff, #f8f9fa);
-      padding: 25px;
-      border-radius: 14px;
-      box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
-      text-align: center;
-      font-family: "Poppins", sans-serif;
-      min-width: 280px;
-      max-width: 340px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-    }
 
-    .contact-popup h2 {
-      margin-bottom: 12px;
-      color: #333;
-      font-size: 22px;
-      font-weight: 600;
-    }
 
-    .contact-popup p {
-      margin: 6px 0;
-      font-size: 16px;
-      color: #444;
-      font-weight: 500;
-      background: linear-gradient(120deg, #007bff, #0056b3);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 0.5px;
-    }
-
-    .contact-popup p a {
-      text-decoration: none;
-      font-weight: bold;
-      color: inherit;
-      transition: all 0.3s ease;
-    }
-
-    .contact-popup p a:hover {
-      opacity: 0.8;
-    }
 
     .word {
       transition: background-color 0.3s ease;
@@ -230,6 +186,63 @@
       }
     }
   </style>
+   <style>
+  /* Pop-up Container */
+.popup-container {
+  
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    width: 320px;
+    border-radius: 10px;
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); */
+    text-align: center;
+    font-family: Arial, sans-serif;
+    display: none; /* Initially hidden */
+}
+
+/* Close Button */
+/* .popup-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+} */
+
+/* Input Fields */
+.user-name, .user-phone {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Submit Button */
+.popup-submit {
+    background: #6a5acd;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.popup-submit:hover {
+    background: #483d8b;
+}
+
+</style>
 </head>
 <body>
   <div class="profile-menu" onclick="toggleMenu()">
@@ -269,15 +282,15 @@
 
   <!-- Contact Us Popup -->
   <div class="overlay" id="contactOverlay" onclick="closeContactPopup()"></div>
-  <div class="contact-popup" id="contactPopup">
+  <div class="popup-container" id="contactPopup">
+    <button class="popup-close" onclick="closePopup()">&times;</button>
     <h2>Get in Touch</h2>
-    <p>We'd love to hear from you! Reach out to us anytime.</p>
-    <p><strong>Email:</strong> <a href="mailto:example@mail.com">example@mail.com</a></p>
-    <p><strong>Phone:</strong> <a href="tel:+1234567890">+123 456 7890</a></p>
-    <p class="small-text">Available 24/7 for your queries.</p>
-    <button onclick="closeContactPopup()">Close</button>
-  </div>
-
+    <p>The exclusive design launches on 10/10!</p>
+    <p><strong>Sign up for early access!</strong></p>
+    <input type="text" class="user-name" placeholder="Full Name" required>
+    <input type="text" class="user-phone" placeholder="Phone Number" required>
+    <button id="submitBtn" class="popup-submit">Send</button>
+</div>
   <div class="main-container">
     <div class="avatar-container">
       <div id="container3D"></div>
@@ -302,6 +315,10 @@
   <script type="module" src="js/speechtotext.js"></script>
   <script type="module" src="highlight.js"></script>
   <script>
+    function closePopup() {
+    document.getElementById("contactpopup").style.display = "none";
+}
+
     function toggleMenu() {
       var menu = document.getElementById("menuDropdown");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
@@ -322,7 +339,7 @@
     }
 
     function logout() {
-      window.location.href = "templates/static/bot.html"; // Redirect to bot.html after logout
+      window.location.href = "../bot.html"; // Redirect to bot.html after logout
     }
 
     function openCustomizePopup() {
@@ -374,3 +391,4 @@
   </script>
 </body>
 </html>
+
