@@ -20,7 +20,7 @@ app.config['MYSQL_PORT'] = 3306  # Default MySQL Port
 # Initialize MySQL
 mysql = MySQL(app)
 # Configure the Google Generative AI API
-GOOGLE_API_KEY = "AIzaSyDrcKRDLBYVhuI813-ryCqCx4Jeazyjx44"
+GOOGLE_API_KEY = "AIzaSyANpHL0jNHjyGuSUlZiUxcsxGCPvyq7Ock"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-pro')  # or any listed model
 
