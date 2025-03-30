@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from flask_mysqldb import MySQL
-import bcrypt
-import google.generativeai as genai
+from flask import Flask, request, jsonify# type: ignore
+from flask_cors import CORS# type: ignore
+from flask_mysqldb import MySQL # type: ignore
+import bcrypt# type: ignore
+import google.generativeai as genai # type: ignore
 import os
-import fitz  
+import fitz  # type: ignore
 import re
 from datetime import datetime
 
@@ -18,8 +18,6 @@ CORS(app, resources={
         "allow_headers": ["Content-Type"]
     }
 })
-
-
 app.config['MYSQL_HOST'] = '161.97.70.226'
 app.config['MYSQL_USER'] = 'triforce'
 app.config['MYSQL_PASSWORD'] = 'hSPEm1fpQPMGWzNbVl1e'
@@ -28,52 +26,11 @@ app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'  
 
 mysql = MySQL(app)
-<<<<<<< HEAD
-
-=======
 # Configure the Google Generative AI API
->>>>>>> 730d74b3e8c6bc7ae4d165135792504a3df38460
 GOOGLE_API_KEY = "AIzaSyANpHL0jNHjyGuSUlZiUxcsxGCPvyq7Ock"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-pro')
-
-
-user_context = {}
-
-def extract_text_from_pdf(pdf_path):
-    """Extract text content from PDF file."""
-    try:
-        doc = fitz.open(pdf_path)
-        text = ""
-        for page in doc:
-            text += page.get_text() + "\n"
-        return text
-    except Exception as e:
-        raise Exception(f"PDF extraction error: {str(e)}")
-
-def extract_cognitive_scores(text):
-    """Parse cognitive scores from extracted text."""
-    scores = {
-        "verbal_comprehension": 0,
-        "perceptual_reasoning": 0,
-        "working_memory": 0,
-        "processing_speed": 0
-    }
-
-    patterns = {
-        "verbal_comprehension": r"Verbal Comprehension\s+(\d+)",
-        "perceptual_reasoning": r"Perceptual Reasoning\s+(\d+)",
-        "working_memory": r"Working Memory\s+(\d+)",
-        "processing_speed": r"Processing Speed\s+(\d+)"
-    }
-
-    for category, pattern in patterns.items():
-        match = re.search(pattern, text, re.IGNORECASE)
-        if match:
-            scores[category] = int(match.group(1))
-
-    return scores
-
+user_context={}
 def validate_email(email):
     """Validate email format."""
     return re.match(r"[^@]+@[^@]+\.[^@]+", email)
@@ -81,59 +38,6 @@ def validate_email(email):
 def validate_phone(phone):
     """Validate phone number format."""
     return re.match(r"^[0-9]{10,15}$", phone)
-
-# API Endpoints
-@app.route("/upload_pdf_report", methods=["POST"])
-def upload_pdf_report():
-    """Process uploaded PDF report and store cognitive scores."""
-    try:
-        if "file" not in request.files:
-            return jsonify({"error": "No file uploaded"}), 400
-
-        file = request.files["file"]
-        email = request.form.get("email", "").strip()
-
-        if not email or not validate_email(email):
-            return jsonify({"error": "Valid email is required"}), 400
-
-        # Save file temporarily
-        pdf_path = os.path.join("/tmp", file.filename)
-        file.save(pdf_path)
-
-        # Process PDF
-        extracted_text = extract_text_from_pdf(pdf_path)
-        scores = extract_cognitive_scores(extracted_text)
-        highest_strength = max(scores, key=scores.get)
-
-        # Update database
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            UPDATE users 
-            SET verbal_comprehension = %s, perceptual_reasoning = %s, 
-                working_memory = %s, processing_speed = %s, highest_strength = %s
-            WHERE email = %s
-        """, (
-            scores["verbal_comprehension"],
-            scores["perceptual_reasoning"],
-            scores["working_memory"],
-            scores["processing_speed"],
-            highest_strength,
-            email
-        ))
-        mysql.connection.commit()
-        cur.close()
-
-        # Clean up
-        os.remove(pdf_path)
-
-        return jsonify({
-            "message": "PDF processed successfully",
-            "scores": scores,
-            "highest_strength": highest_strength
-        }), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 @app.route("/register", methods=["POST"])
 def register():
