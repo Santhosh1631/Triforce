@@ -1,5 +1,6 @@
 let isSpeaking = false; // Flag to track if speech is currently playing
 let utterance = null; // Holds the current speech synthesis utterance
+let currentHighlight = null; // Tracks the currently highlighted word
 
 // Function to handle text copying to clipboard
 function copyTextToClipboard(text, copyIcon) {
@@ -142,110 +143,125 @@ function sendMessage() {
   }
 }
 
-// Function to toggle speech and highlight words
+// Function to toggle speech with word highlighting
 function toggleSpeech(text, messageElement) {
   if ("speechSynthesis" in window) {
     if (isSpeaking) {
       speechSynthesis.cancel();
       isSpeaking = false;
+      removeHighlight();
     } else {
-      const sections = messageElement.children;
-
-      let wordIndex = 0;
-      let sectionIndex = 0;
-      let sectionContent = "";
-      let words = [];
-      let wordPositions = [];
-
-      // Function to extract words and their positions from sections
-      function extractWords() {
-        if (sectionIndex < sections.length) {
-          const section = sections[sectionIndex];
-          if (section.children) {
-            for (const child of section.children) {
-              if (child.textContent) {
-                const childWords = child.textContent.split(" ");
-                for (let i = 0; i < childWords.length; i++) {
-                  words.push(childWords[i]);
-                  wordPositions.push({ section: sectionIndex, child: child, index: i });
-                }
-              }
-            }
-            sectionIndex++;
-            extractWords();
-          } else {
-            const sectionWords = section.textContent.split(" ");
-            for (let i = 0; i < sectionWords.length; i++) {
-              words.push(sectionWords[i]);
-              wordPositions.push({ section: sectionIndex, child: null, index: i });
-            }
-            return;
-          }
+      removeHighlight();
+      
+      // Create a new utterance
+      utterance = new SpeechSynthesisUtterance(text);
+      
+      utterance.onboundary = function(event) {
+        if (event.name === 'word') {
+          removeHighlight();
+          
+          const charIndex = event.charIndex;
+          const wordLength = event.charLength;
+          let currentWord = text.substr(charIndex, wordLength).trim();
+          
+          if (!currentWord) return;
+          
+          // Clean the word by removing any punctuation at the end
+          currentWord = currentWord.replace(/[.,;!?]$/, '');
+          if (!currentWord) return;
+          
+          // Find and highlight the word in the message element
+          highlightWord(messageElement, currentWord);
         }
-      }
-
-      extractWords();
-
-      // Reset any existing highlights
-      for (const section of sections) {
-        if (section.children) {
-          for (const child of section.children) {
-            if (child.innerHTML.includes("<b>")) {
-              child.innerHTML = child.textContent;
-            }
-          }
-        } else if (section.innerHTML.includes("<b>")) {
-          section.innerHTML = section.textContent;
-        }
-      }
-
-      function speakAndHighlight() {
-        if (wordIndex < words.length) {
-          const word = words[wordIndex];
-          const position = wordPositions[wordIndex];
-
-          // Reset any existing highlights
-          for (const section of sections) {
-            if (section.children) {
-              for (const child of section.children) {
-                if (child.innerHTML.includes("<b>")) {
-                  child.innerHTML = child.textContent;
-                }
-              }
-            } else if (section.innerHTML.includes("<b>")) {
-              section.innerHTML = section.textContent;
-            }
-          }
-
-          // Highlight the current word
-          if (position.child) {
-            const childWords = position.child.textContent.split(" ");
-            childWords[position.index] = `<b>${childWords[position.index]}</b>`;
-            position.child.innerHTML = childWords.join(" ");
-          } else {
-            const sectionWords = sections[position.section].textContent.split(" ");
-            sectionWords[position.index] = `<b>${sectionWords[position.index]}</b>`;
-            sections[position.section].innerHTML = sectionWords.join(" ");
-          }
-
-          utterance = new SpeechSynthesisUtterance(word);
-          speechSynthesis.speak(utterance);
-
-          utterance.onend = () => {
-            wordIndex++;
-            speakAndHighlight();
-          };
-        } else {
-          isSpeaking = false;
-        }
-      }
-
-      speakAndHighlight();
+      };
+      
+      utterance.onend = function() {
+        isSpeaking = false;
+        removeHighlight();
+      };
+      
+      speechSynthesis.speak(utterance);
       isSpeaking = true;
     }
   }
 }
 
+// Helper function to highlight a word in an element
+function highlightWord(element, word) {
+  // First remove any existing highlights
+  removeHighlight();
+  
+  // Create a regex to match the word (case insensitive)
+  const regex = new RegExp(`\\b${word}\\b`, 'gi');
+  
+  // Walk through all text nodes in the element
+  const treeWalker = document.createTreeWalker(
+    element,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+  
+  let node;
+  while (node = treeWalker.nextNode()) {
+    const nodeText = node.nodeValue;
+    const match = regex.exec(nodeText);
+    
+    if (match) {
+      // Split the text node into parts
+      const before = nodeText.substring(0, match.index);
+      const highlighted = nodeText.substring(match.index, match.index + match[0].length);
+      const after = nodeText.substring(match.index + match[0].length);
+      
+      // Create new nodes
+      const beforeNode = document.createTextNode(before);
+      const highlightNode = document.createElement('span');
+      highlightNode.className = 'speech-highlight';
+      highlightNode.textContent = highlighted;
+      const afterNode = document.createTextNode(after);
+      
+      // Replace the original node with new nodes
+      const parent = node.parentNode;
+      parent.insertBefore(beforeNode, node);
+      parent.insertBefore(highlightNode, node);
+      parent.insertBefore(afterNode, node);
+      parent.removeChild(node);
+      
+      // Store reference to current highlight
+      currentHighlight = highlightNode;
+      
+      // Scroll to the highlighted word
+      highlightNode.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+      
+      break;
+    }
+  }
+}
+
+// Helper function to remove highlight
+function removeHighlight() {
+  if (currentHighlight) {
+    const parent = currentHighlight.parentNode;
+    const text = currentHighlight.textContent;
+    const textNode = document.createTextNode(text);
+    parent.replaceChild(textNode, currentHighlight);
+    currentHighlight = null;
+  }
+}
+
+// Add the highlight style
+const style = document.createElement('style');
+style.textContent = `
+  .speech-highlight {
+    background-color: rgba(255, 255, 0, 0.5);
+    border-radius: 3px;
+    transition: background-color 0.3s;
+  }
+`;
+document.head.appendChild(style);
 
 // Add event listeners for input and send button
 document.getElementById("send-btn").addEventListener("click", sendMessage);

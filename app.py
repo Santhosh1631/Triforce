@@ -28,7 +28,11 @@ app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'  
 
 mysql = MySQL(app)
+<<<<<<< HEAD
 
+=======
+# Configure the Google Generative AI API
+>>>>>>> 730d74b3e8c6bc7ae4d165135792504a3df38460
 GOOGLE_API_KEY = "AIzaSyANpHL0jNHjyGuSUlZiUxcsxGCPvyq7Ock"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-pro')
