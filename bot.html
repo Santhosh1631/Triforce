@@ -14,48 +14,19 @@
             height: 100vh;
             color: #fff;
             display: flex;
-            justify-content: flex-start; /* Align content to the left */
+            justify-content: flex-start;
             align-items: center;
-            background-image: url('templates/img/kesikabg2.jpg'); /* Add your local image path here */
+            background-image: url('templates/img/kesikabg2.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
-        .modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    width: 300px;
-    position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
-}
-
 
         .content {
             padding: 40px;
             max-width: 500px;
-            text-align: left; /* Align text to the left */
-            margin-left: 50px; /* Add margin to the left */
+            text-align: left;
+            margin-left: 50px;
         }
 
         header h1 {
@@ -74,7 +45,7 @@
 
         .btn {
             padding: 15px 30px;
-            background: linear-gradient(135deg, #6a11cb, #f750c2); /* Gradient from pink to blue */
+            background: linear-gradient(135deg, #6a11cb, #f750c2);
             color: #fff;
             border: none;
             border-radius: 30px;
@@ -85,7 +56,7 @@
         }
 
         .btn:hover {
-            background: linear-gradient(135deg, #f750c2, #6a11cb); /* Darker gradient on hover */
+            background: linear-gradient(135deg, #f750c2, #6a11cb);
             transform: scale(1.05);
         }
 
@@ -96,72 +67,66 @@
             color: #eaeaea;
         }
 
-        /* Modal Styles */
-        .modal {
+        /* Sign In / Sign Up Modal */
+        .overlay {
             display: none;
             position: fixed;
-            z-index: 1000;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
 
-        .modal-content {
+        .popup-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: #fff;
-            color: #000;
+            padding: 20px;
             border-radius: 10px;
-            padding: 30px;
+            width: 320px;
             text-align: center;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
         }
 
-        .modal-content h2 {
-            margin-top: 0;
-            color: #6a11cb;
+        .popup-tabs button {
+            width: 50%;
+            padding: 10px;
+            background: #6a11cb;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
 
-        .modal-content input {
+        .popup-tabs button:hover {
+            background: #483d8b;
+        }
+
+        .popup-container input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            font-size: 1rem;
         }
 
-        .modal-content button {
+        .popup-submit {
             width: 100%;
             padding: 12px;
             background: #6a11cb;
-            color: #fff;
+            color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
             margin-top: 10px;
-            transition: background 0.3s ease;
         }
 
-        .modal-content button:hover {
+        .popup-submit:hover {
             background: #540da5;
-        }
-
-        .modal-content .close {
-            background: none;
-            color: #000;
-            font-size: 1.5rem;
-            text-align: right;
-            cursor: pointer;
-            border: none;
-            position: absolute;
-            top: 10px;
-            right: 15px;
         }
 
         /* Toast Notification */
@@ -174,12 +139,7 @@
             color: white;
             padding: 15px;
             border-radius: 5px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 1001;
-        }
-
-        #toast.error {
-            background: #f44336;
         }
     </style>
 </head>
@@ -191,155 +151,133 @@
             <p>Your AI companion, always here for you.</p>
             <button class="btn" onclick="startChat()">Start Chatting</button>
         </header>
-
         <section class="hero">
-            <p style="text-align: justify;">ZenBot is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth.</p>
+            <p style="text-align: justify;">
+                ZenBot is a compassionate chatbot tailored for neurodivergent students. It provides personalized support
+                and adaptive learning tools to meet diverse cognitive needs.
+            </p>
         </section>
     </div>
 
-    <!-- Prompt Modal -->
-<div id="promptModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closePromptModal()">&times;</span> <!-- Close Icon -->
-        <h2>Do you want to sign up or sign in?</h2>
-        <button class="btn psignin-btn" onclick="redirectToSignIn()">Sign In</button>
-        <button class="btn psignup-btn" onclick="redirectToSignUp()">Sign Up</button>
-        
-    </div>
-</div>
-
-    <!-- Modal for Sign-In -->
-    <div id="signinModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModalsignin()">&times;</button>
-            <h2>Sign In</h2>
-            <input type="text" placeholder="E-mail" required>
-            <input type="password" placeholder="Password" required>
-            <button id="signinBtn">Sign In</button>
+    <!-- Login Modal -->
+    <div class="overlay" id="signupOverlay"></div>
+    <div class="popup-container" id="signupPopup">
+        <div class="popup-tabs">
+            <button onclick="showSignIn()">Sign In</button>
+            <button onclick="showSignUp()">Sign Up</button>
         </div>
-    </div>
-     <!-- Modal for Sign-Up -->
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <button class="close" onclick="closeModalsignup()">&times;</button>
+
+        <div id="signInForm">
+            <h2>Sign In & Upload</h2>
+            <input type="email" id="signinEmail" placeholder="Email" required>
+            <input type="password" id="signinPassword" placeholder="Password" required>
+            <input type="file" id="signinPdfUpload" accept=".pdf">
+            <button class="popup-submit" onclick="submitSignIn()">Sign In & Update</button>
+        </div>
+
+        <div id="signUpForm" style="display: none;">
             <h2>Sign Up</h2>
-            <input type="text" placeholder="Email" required>
-            <input type="password" placeholder="Password" required>
-            <button id="registerBtn">Register</button>
+            <input type="text" id="signupName" placeholder="Full Name" required>
+            <input type="email" id="signupEmail" placeholder="Email" required>
+            <input type="password" id="signupPassword" placeholder="Password" required>
+            <input type="file" id="signupPdfUpload" accept=".pdf">
+            <button class="popup-submit" onclick="submitSignup()">Sign Up</button>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast">Action Successful!</div>
+    <div id="toast"></div>
 
     <script>
-        function redirectToSignIn() {
-    document.getElementById("promptModal").style.display = "none";
-    document.getElementById("signinModal").style.display = "block";
-}
-
-function redirectToSignUp() {
-    document.getElementById("promptModal").style.display = "none";
-    document.getElementById("signupModal").style.display = "block";
-}
-
-function closePromptModal() {
-    document.getElementById("promptModal").style.display = "none";
-}
-
-function closeModalsignin() {
-    document.getElementById("signinModal").style.display = "none";
-}
-
-function closeModalsignup() {
-    document.getElementById("signupModal").style.display = "none";
-}
-  
+        let users = {};
         let isUserSignedIn = false;
 
-async function startChat() {
-    if (!isUserSignedIn) {
-        openPromptModal();
-    } else {
-        redirectToChatPage();
-    }
-}
+        function startChat() {
+            if (!isUserSignedIn) {
+                document.getElementById("signupOverlay").style.display = "block";
+                document.getElementById("signupPopup").style.display = "block";
+            } else {
+                window.location.href = "templates/index.html";
+            }
+        }
 
-function openPromptModal() {
-    document.getElementById('promptModal').style.display = 'flex';
-}
+        function showSignIn() {
+            document.getElementById("signInForm").style.display = "block";
+            document.getElementById("signUpForm").style.display = "none";
+        }
 
-function closePromptModal() {
-    document.getElementById('promptModal').style.display = 'none';
-}
+        function showSignUp() {
+            document.getElementById("signUpForm").style.display = "block";
+            document.getElementById("signInForm").style.display = "none";
+        }
+        
+        async function submitSignup() {
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
 
-function redirectToChatPage() {
-    window.location.href = "templates/index.html";
-}
+            const response = await fetch("http://localhost:5001/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            showToast(data.message || data.error, !response.ok);
+            if (response.ok) {
+                closeModalsignup();
+                startChat();
+            }
+        }
 
-async function registerUser() {
-    const email = document.querySelector("#signupModal input[type='text']").value;
-    const password = document.querySelector("#signupModal input[type='password']").value;
+        async function submitSignIn() {
+            const email = document.getElementById("signinEmail").value;
+            const password = document.getElementById("signinPassword").value;
 
-    const response = await fetch("http://localhost:5001/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
-    
-    const data = await response.json();
-    showToast(data.message || data.error, !response.ok);
-    if (response.ok) {
-        closeModalsignup();
-        openModalsignin();
-    }
-}
+            if (!email || !password) {
+                showToast("Please enter email and password", true);
+                return;
+            }
 
-async function loginUser() {
-    const email = document.querySelector("#signinModal input[type='text']").value;
-    const password = document.querySelector("#signinModal input[type='password']").value;
+            const response = await fetch("http://localhost:5001/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
 
-    const response = await fetch("http://localhost:5001/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
-    
-    const data = await response.json();
-    showToast(data.message || data.error, !response.ok);
-    if (response.ok) {
-        isUserSignedIn = true;
-        closeModalsignin();
-        redirectToChatPage();
-    }
-}
+            const data = await response.json();
+            showToast(data.message || data.error, !response.ok);
 
-async function sendMessageToChat() {
-    const message = document.getElementById("userMessage").value;
-    if (!message) return;
+            if (response.ok) {
+                // Store email in localStorage
+                localStorage.setItem('userEmail', email);
+                isUserSignedIn = true;
+                document.getElementById("signupOverlay").style.display = "none";
+                document.getElementById("signupPopup").style.display = "none";
+                startChat();
+            }
+        }
 
-    const response = await fetch("http://localhost:5001/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, user_id: "default" })
-    });
-    
-    const data = await response.json();
-    document.getElementById("chatResponse").innerText = data.response;
-}
+        async function sendMessageToChat() {
+            const message = document.getElementById("userMessage").value;
+            if (!message) return;
 
-function showToast(message, isError = false) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.className = isError ? "error" : "";
-    toast.style.display = "block";
-    setTimeout(() => { toast.style.display = "none"; }, 3000);
-}
+            const response = await fetch("http://localhost:5001/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message, user_id: "default" })
+            });
+            
+            const data = await response.json();
+            document.getElementById("chatResponse").innerText = data.response;
+        }
 
-document.getElementById("signinBtn").addEventListener("click", loginUser);
-document.getElementById("registerBtn").addEventListener("click", registerUser);
-
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = isError ? "error" : "";
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
     </script>
 </body>
-
 </html>

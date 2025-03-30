@@ -1,5 +1,5 @@
 import fitz  # PyMuPDF
-pdf_path = "templates/Resume.pdf"
+pdf_path = "templates/sample.pdf"
 doc = fitz.open(pdf_path)
 full_text = ""
 for page in doc:
