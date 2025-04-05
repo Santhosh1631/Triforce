@@ -35,7 +35,7 @@ function sendMessage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user_id: "unique_user_id", // Replace with actual user ID logic if needed
+        user_id: localStorage.getItem('userEmail'), // Replace with actual user ID logic if needed
         message: userInput,
       }),
     })
@@ -114,6 +114,21 @@ function sendMessage() {
           });
 
           chatBox.appendChild(botMessage);
+          if (data.url) {
+            const imageContainer = document.createElement("div");
+            imageContainer.style.marginTop = "10px";
+            imageContainer.style.textAlign = "center";
+
+            const imageElement = document.createElement("img");
+            imageElement.src = data.url;
+            imageElement.alt = "Related Visual";
+            imageElement.style.maxWidth = "80%";
+            imageElement.style.borderRadius = "12px";
+            imageElement.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.2)";
+            imageContainer.appendChild(imageElement);
+
+            chatBox.appendChild(imageContainer);
+          }
 
           // Add mic and copy icons
           const iconContainer = document.createElement("div");

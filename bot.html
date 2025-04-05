@@ -153,8 +153,8 @@
         </header>
         <section class="hero">
             <p style="text-align: justify;">
-                ZenBot is a compassionate chatbot tailored for neurodivergent students. It provides personalized support
-                and adaptive learning tools to meet diverse cognitive needs.
+                "Triforce is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts
+            content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth."
             </p>
         </section>
     </div>
@@ -187,11 +187,33 @@
 
     <!-- Toast Notification -->
     <div id="toast"></div>
-
+    <script type="module" src="templates/js/otherjs.js"></script>
     <script>
         let users = {};
         let isUserSignedIn = false;
 
+        
+        async function sendMessageToChat() {
+            const message = document.getElementById("userMessage").value;
+            if (!message) return;
+
+            const response = await fetch("http://localhost:5001/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message, user_id: "default" })
+            });
+            
+            const data = await response.json();
+            document.getElementById("chatResponse").innerText = data.response;
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = isError ? "error" : "";
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
         function startChat() {
             if (!isUserSignedIn) {
                 document.getElementById("signupOverlay").style.display = "block";
@@ -210,19 +232,32 @@
             document.getElementById("signUpForm").style.display = "block";
             document.getElementById("signInForm").style.display = "none";
         }
-        
+
         async function submitSignup() {
+            const name = document.getElementById("signupName").value;
             const email = document.getElementById("signupEmail").value;
             const password = document.getElementById("signupPassword").value;
+            const file = document.getElementById("signupPdfUpload").files[0];
+
+            if (!name || !email || !password || !file) {
+                showToast("Please fill out all fields and upload a PDF", true);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("email", email);
+            formData.append("password", password);
+            formData.append("pdf", file);
 
             const response = await fetch("http://localhost:5001/register", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: formData
             });
-            
+
             const data = await response.json();
             showToast(data.message || data.error, !response.ok);
+
             if (response.ok) {
                 closeModalsignup();
                 startChat();
@@ -257,27 +292,6 @@
             }
         }
 
-        async function sendMessageToChat() {
-            const message = document.getElementById("userMessage").value;
-            if (!message) return;
-
-            const response = await fetch("http://localhost:5001/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message, user_id: "default" })
-            });
-            
-            const data = await response.json();
-            document.getElementById("chatResponse").innerText = data.response;
-        }
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById("toast");
-            toast.textContent = message;
-            toast.className = isError ? "error" : "";
-            toast.style.display = "block";
-            setTimeout(() => { toast.style.display = "none"; }, 3000);
-        }
     </script>
 </body>
 </html>

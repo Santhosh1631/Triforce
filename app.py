@@ -7,7 +7,22 @@ import os
 import fitz  # type: ignore
 import re
 from datetime import datetime
+import mysql.connector
+from werkzeug.utils import secure_filename
+import requests
 
+db_config = {
+    'host': '161.97.70.226',
+    'user': 'triforce',
+    'password': 'hSPEm1fpQPMGWzNbVl1e',
+    'database': 'triforcedb'
+}
+
+API_KEY = "AIzaSyCEa6dXXljP6ogJ5s3BEWBBli5R3cHG0ZA"
+CX = "c23d0e89bcb654d0a"
+
+conn = mysql.connector.connect(**db_config)
+cursor = conn.cursor()
 
 app = Flask(__name__)
 
@@ -25,6 +40,10 @@ app.config['MYSQL_DB'] = 'triforcedb'
 app.config['MYSQL_PORT'] = 3306
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'  
 
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 mysql = MySQL(app)
 # Configure the Google Generative AI API
 GOOGLE_API_KEY = "AIzaSyANpHL0jNHjyGuSUlZiUxcsxGCPvyq7Ock"
@@ -39,16 +58,55 @@ def validate_phone(phone):
     """Validate phone number format."""
     return re.match(r"^[0-9]{10,15}$", phone)
 
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Handle Upload PDF files
+def extract_values_from_pdf(pdf_path):
+    try:
+        with fitz.open(pdf_path) as doc:
+            text = "".join(page.get_text() for page in doc)
+
+        # Define regex patterns for different scores
+        patterns = {
+            'Verbal Comprehension': r'(Verbal\s*Comprehension)\D*(\d+)',
+            'Perceptual Reasoning': r'(Perceptual\s*Reasoning)\D*(\d+)',
+            'Working Memory': r'(Working\s*Memory)\D*(\d+)',
+            'Processing Speed': r'(Processing\s*Speed)\D*(\d+)'
+        }
+
+        scores = {}
+        for key, pattern in patterns.items():
+            match = re.search(pattern, text, re.IGNORECASE)
+            scores[key] = int(match.group(2)) if match else 0
+
+        # Finding the highest score
+        highest_strength = max(scores, key=scores.get)
+
+        # print("Extracted Scores:", scores)
+        # print("Highest Strength:", highest_strength)
+        return {
+            "scores": scores,
+            "highest_strength": highest_strength
+        }
+    
+    except FileNotFoundError:
+        print(f"File not found: {pdf_path}")    
+
+    except Exception as e:
+        print(f"Error processing PDF: {str(e)}")
+
 @app.route("/register", methods=["POST"])
 def register():
     """Handle user registration."""
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
+        if 'pdf' not in request.files:
+            return jsonify({"error": "PDF file is required"}), 400
 
-        email = data.get("email", "").strip()
-        password = data.get("password", "").strip()
+        pdf = request.files['pdf']
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
         if not email or not password:
             return jsonify({"error": "Email and password are required"}), 400
@@ -56,15 +114,22 @@ def register():
         if not validate_email(email):
             return jsonify({"error": "Invalid email format"}), 400
 
-        # Hash password
+        if not all([name, email, password]):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        filename = secure_filename(pdf.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        pdf.save(file_path)
+
+        values = extract_values_from_pdf(file_path)
+
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        # Store in database
         cur = mysql.connection.cursor()
         cur.execute("""
-            INSERT INTO users (email, password, created_at) 
-            VALUES (%s, %s, %s)
-        """, (email, hashed_password, datetime.utcnow()))
+            INSERT INTO users (email, password, created_at, verbal_comprehension, perceptual_reasoning, working_memory, processing_speed, highest_strength) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (email, hashed_password, datetime.utcnow(), values["scores"]["Verbal Comprehension"], values["scores"]["Perceptual Reasoning"], values["scores"]["Working Memory"], values["scores"]["Processing Speed"], values["highest_strength"],))
         mysql.connection.commit()
         cur.close()
 
@@ -149,6 +214,28 @@ def submit_contact():
             "message": f"Failed to submit contact: {str(e)}"
         }), 500
 
+def get_image_urls(search_term, api_key, cx, num=5):
+    url = "https://www.googleapis.com/customsearch/v1"
+    params = {
+        "q": search_term,
+        "cx": cx,
+        "key": api_key,
+        "searchType": "image",
+        "num": num
+    }
+
+    try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        results = response.json()
+
+        image_urls = [item["link"] for item in results.get("items", [])]
+        return image_urls
+
+    except Exception as e:
+        print(f"Error fetching images: {e}")
+        return []
+    
 @app.route("/chat", methods=["POST"])
 def chat():
     """Handle chatbot interactions."""
@@ -156,6 +243,11 @@ def chat():
         data = request.get_json()
         user_message = data.get("message", "").strip()
         user_id = data.get("user_id", "default")
+        
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT highest_strength FROM users WHERE email = %s", (user_id,))
+        result = cur.fetchone()
+        cur.close()
 
         if not user_message:
             return jsonify({"response": "Please provide a message"}), 400
@@ -172,8 +264,14 @@ def chat():
         response = model.generate_content(contents=[{"parts": [{"text": conversation_history}]}])
         bot_response = response.parts[0].text
         user_context[user_id].append(f"Bot: {bot_response}")
+        imageurl = None
 
-        return jsonify({"response": bot_response})
+        if(result["highest_strength"] == 'Perceptual Reasoning'): 
+            images = get_image_urls(user_message, API_KEY, CX)
+            imageurl = images[0]
+ 
+
+        return jsonify({"response": bot_response, "url" : imageurl})
 
     except Exception as e:
         return jsonify({"response": f"Error: {str(e)}"}), 500

@@ -333,8 +333,9 @@
   <script type="module" src="js/avator.js"></script>
   <script type="module" src="js/send_message.js"></script>
   <script type="module" src="js/speechtotext.js"></script>
-  <script type="module" src="highlight.js"></script>
+ 
   <script>
+    
 // Display user email in profile menu
 function displayUserEmail() {
         const userEmail = localStorage.getItem('userEmail');
@@ -370,7 +371,235 @@ document.addEventListener('DOMContentLoaded', function() {
   if (storedEmail) {
     updateUserEmail(storedEmail);
   }
+  function updateUserEmail() {
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+        document.getElementById("userEmailDisplay").textContent = email;
+    }
+}
+  // Initialize avatar icon
+  const username = "User";
+  const avatarIcon = generateAvatarIcon(username);
+  document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
+});
+
+// When user logs in (assuming you have a login function)
+function handleLogin(email) {
+  updateUserEmail(email);
+  // Rest of your login logic...
+}
+
+    // Close popup function
+    function closePopup() {
+      document.getElementById("contactPopup").style.display = "none";
+      document.getElementById("contactOverlay").style.display = "none";
+    }
+
+    // Toggle profile menu
+    function toggleMenu() {
+      var menu = document.getElementById("menuDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener("click", function(event) {
+      var profileMenu = document.querySelector(".profile-menu");
+      var menu = document.getElementById("menuDropdown");
+      if (!profileMenu.contains(event.target)) {
+        menu.style.display = "none";
+      }
+    });
+
+    // Generate avatar icon based on username
+    function generateAvatarIcon(username) {
+      const avatars = ["fa-user", "fa-user-ninja", "fa-user-secret", "fa-user-astronaut", "fa-user-tie"];
+      const index = username ? username.charCodeAt(0) % avatars.length : 0;
+      return avatars[index];
+    }
+
   
+
+    // Customize popup functions
+    function openCustomizePopup() {
+      document.getElementById("customizePopup").style.display = "block";
+      document.getElementById("overlay").style.display = "block";
+    }
+
+    function applyCustomization() {
+      const font = document.getElementById("fontSelect").value;
+      const fontSize = document.getElementById("fontSize").value + "px";
+      const lineSpacing = document.getElementById("lineSpacing").value + "em";
+      const letterSpacing = document.getElementById("letterSpacing").value + "px";
+
+      document.body.style.fontFamily = font;
+      document.body.style.fontSize = fontSize;
+      document.body.style.lineHeight = lineSpacing;
+      document.body.style.letterSpacing = letterSpacing;
+
+      closeCustomizePopup();
+    }
+
+    function closeCustomizePopup() {
+      document.getElementById("customizePopup").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+    }
+
+    // Initialize avatar icon
+    document.addEventListener("DOMContentLoaded", function() {
+      const username = "User";
+      const avatarIcon = generateAvatarIcon(username);
+      document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
+    });
+
+    // Contact popup functions
+    function openContactPopup() {
+      document.getElementById("contactPopup").style.display = "block";
+      document.getElementById("contactOverlay").style.display = "block";
+      // Clear previous inputs and errors
+      document.getElementById("contactName").value = "";
+      document.getElementById("contactEmail").value = "";
+      document.getElementById("contactPhone").value = "";
+      document.getElementById("nameError").style.display = "none";
+      document.getElementById("emailError").style.display = "none";
+      document.getElementById("phoneError").style.display = "none";
+    }
+
+    function closeContactPopup() {
+      document.getElementById("contactPopup").style.display = "none";
+      document.getElementById("contactOverlay").style.display = "none";
+    }
+
+    // Form validation and submission
+    function validateAndSend() {
+      const name = document.getElementById("contactName").value.trim();
+      const email = document.getElementById("contactEmail").value.trim();
+      const phone = document.getElementById("contactPhone").value.trim();
+      
+      let isValid = true;
+      
+      // Validate name
+      if (name === "") {
+        document.getElementById("nameError").style.display = "block";
+        isValid = false;
+      } else {
+        document.getElementById("nameError").style.display = "none";
+      }
+      
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        document.getElementById("emailError").style.display = "block";
+        isValid = false;
+      } else {
+        document.getElementById("emailError").style.display = "none";
+      }
+      
+      // Validate phone (simple validation)
+      const phoneRegex = /^[0-9]{10,15}$/;
+      if (!phoneRegex.test(phone)) {
+        document.getElementById("phoneError").style.display = "block";
+        isValid = false;
+      } else {
+        document.getElementById("phoneError").style.display = "none";
+      }
+      
+      if (isValid) {
+        sendContactForm(name, email, phone);
+      }
+    }
+
+    // Send contact form data to server
+   // Send contact form data to server
+   function sendContactForm(name, email, phone) {
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    fetch('http://localhost:5001/submit_contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone })
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Log the response body for debugging
+            return response.json().then(err => {
+                console.error("Server error details:", err);
+                throw new Error(err.message || "Server error");
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            document.getElementById("successPopup").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("successPopup").style.display = "none";
+                closeContactPopup();
+            }, 2000);
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Full error:", error);
+        alert("Failed to submit: " + error.message);
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send';
+    });
+}  
+      // Show loading stat
+
+    // Copy to clipboard function
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied: " + text);
+      });
+    }
+// Display user email in profile menu
+function displayUserEmail() {
+        const userEmail = localStorage.getItem('userEmail');
+        const emailDisplay = document.getElementById('userEmailDisplay');
+        
+        if (userEmail) {
+            emailDisplay.textContent = userEmail;
+        } else {
+            emailDisplay.textContent = 'Not signed in';
+            // Redirect to login if not signed in
+            window.location.href = "../index.html";
+        }
+    }
+
+    // Update logout function
+    function logout() {
+        localStorage.removeItem('userEmail');
+        window.location.href = "../bot.html";
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        displayUserEmail();
+        
+        // Rest of your existing initialization code
+        const username = "User";
+        const avatarIcon = generateAvatarIcon(username);
+        document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
+    });
+// On page load, check for stored email
+document.addEventListener('DOMContentLoaded', function() {
+  const storedEmail = localStorage.getItem('userEmail');
+  if (storedEmail) {
+    updateUserEmail(storedEmail);
+  }
+  function updateUserEmail() {
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+        document.getElementById("userEmailDisplay").textContent = email;
+    }
+}
   // Initialize avatar icon
   const username = "User";
   const avatarIcon = generateAvatarIcon(username);
