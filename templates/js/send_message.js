@@ -219,30 +219,51 @@ import { startMouthMovement, stopMouthMovement } from './avator.js';
         function highlightWord(element, word, charIndex) {
           removeHighlight();
         
-          if (!word || !charIndex) return;
+          const treeWalker = document.createTreeWalker(
+            element,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+          );
         
-          const textContent = element.textContent;
+          let node;
+          let currentCharCount = 0;
         
-          // Find the word starting from the current spoken character index
-          const wordIndex = textContent.indexOf(word, charIndex);
+          while ((node = treeWalker.nextNode())) {
+            const text = node.nodeValue;
+            const nodeStart = currentCharCount;
+            const nodeEnd = currentCharCount + text.length;
         
-          if (wordIndex === -1) return;
+            if (charIndex >= nodeStart && charIndex < nodeEnd) {
+              const offset = charIndex - nodeStart;
         
-          const before = textContent.slice(0, wordIndex);
-          const highlight = textContent.slice(wordIndex, wordIndex + word.length);
-          const after = textContent.slice(wordIndex + word.length);
+              // Try to find the actual word at that offset
+              const match = text.slice(offset).match(new RegExp(`^${word}\\b`, "i"));
+              if (!match) return;
         
-          element.innerHTML = `${before}<span class="speech-highlight">${highlight}</span>${after}`;
+              const range = document.createRange();
+              range.setStart(node, offset);
+              range.setEnd(node, offset + word.length);
         
-          currentHighlight = element.querySelector(".speech-highlight");
+              const span = document.createElement("span");
+              span.className = "speech-highlight";
+              range.surroundContents(span);
         
-          if (currentHighlight) {
-            currentHighlight.scrollIntoView({
-              behavior: "smooth",
-              block: "nearest"
-            });
+              currentHighlight = span;
+        
+              span.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+              });
+        
+              break;
+            }
+        
+            currentCharCount += text.length;
           }
         }
+        
+        
         
 
 
@@ -258,6 +279,7 @@ import { startMouthMovement, stopMouthMovement } from './avator.js';
             currentHighlight = null;
           }
         }
+        
 
         // Add the highlight style
         const style = document.createElement('style');
