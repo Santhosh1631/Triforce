@@ -92,20 +92,6 @@
             text-align: center;
             z-index: 1000;
         }
-
-        .popup-tabs button {
-            width: 50%;
-            padding: 10px;
-            background: #6a11cb;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .popup-tabs button:hover {
-            background: #483d8b;
-        }
-
         .popup-container input {
             width: 100%;
             padding: 10px;
@@ -115,18 +101,21 @@
         }
 
         .popup-submit {
-            width: 100%;
-            padding: 12px;
-            background: #6a11cb;
-            color: white;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #6a11cb, #f750c2);
+            color: #fff;
             border: none;
-            cursor: pointer;
-            font-size: 1rem;
             margin-top: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
         }
 
         .popup-submit:hover {
-            background: #540da5;
+            background: linear-gradient(135deg, #f750c2, #6a11cb);
+            transform: scale(1.05);
         }
 
         /* Toast Notification */
@@ -141,6 +130,33 @@
             border-radius: 5px;
             z-index: 1001;
         }
+        .custom-file-upload {
+        display: inline-block;
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #cdcdcd;
+        color: white;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+    }
+
+    .custom-file-upload:hover {
+        background-color: #969696;
+    }
+
+    #signupPdfUpload {
+        display: none;
+    }
+    #signinPdfUpload {
+        display: none;
+    }
+
+    .file-name {
+        margin-left: 10px;
+        font-style: italic;
+        font-size: 14px;
+    }
     </style>
 </head>
 
@@ -153,7 +169,7 @@
         </header>
         <section class="hero">
             <p style="text-align: justify;">
-                "Triforce is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts
+                "ZenBot is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts
             content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth."
             </p>
         </section>
@@ -163,23 +179,30 @@
     <div class="overlay" id="signupOverlay"></div>
     <div class="popup-container" id="signupPopup">
         <div class="popup-tabs">
-            <button onclick="showSignIn()">Sign In</button>
-            <button onclick="showSignUp()">Sign Up</button>
+            <span onclick="closeup()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px; color:black">&times;</span>
+            <button class="btn" onclick="showSignIn()">Sign In</button>
+            <button class="btn" onclick="showSignUp()">Sign Up</button>
         </div>
 
-        <div id="signInForm">
-            <h2>Sign In & Upload</h2>
+        <div id="signInForm"style="display: none; padding-right:20px">
+            <span onclick="closesignin()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px;color:black">&times;</span>
+            <h2 style="color: black;">Sign In</h2>
             <input type="email" id="signinEmail" placeholder="Email" required>
             <input type="password" id="signinPassword" placeholder="Password" required>
-            <input type="file" id="signinPdfUpload" accept=".pdf">
-            <button class="popup-submit" onclick="submitSignIn()">Sign In & Update</button>
+            <label for="signupPdfUpload" class="custom-file-upload" style="color: black;">Choose PDF</label>
+            <span style="color: black;"id="fileName" class="file-name">No file chosen(optional)</span>
+            <input type="file" id="signinPdfUpload" accept=".pdf"><br>
+            <button class="popup-submit" onclick="submitSignIn()">Sign In</button>
         </div>
 
-        <div id="signUpForm" style="display: none;">
-            <h2>Sign Up</h2>
+        <div id="signUpForm" style="display: none; padding-right:20px">
+            <span onclick="closesignup()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px;color:black">&times;</span>
+            <h2  style="color: black;">Sign Up</h2>
             <input type="text" id="signupName" placeholder="Full Name" required>
             <input type="email" id="signupEmail" placeholder="Email" required>
             <input type="password" id="signupPassword" placeholder="Password" required>
+            <label for="signupPdfUpload" class="custom-file-upload" style="color: black;">Choose PDF</label>
+            <span style="color: black;"id="fileName" class="file-name">No file chosen(mandatory)</span>
             <input type="file" id="signupPdfUpload" accept=".pdf">
             <button class="popup-submit" onclick="submitSignup()">Sign Up</button>
         </div>
@@ -187,12 +210,24 @@
 
     <!-- Toast Notification -->
     <div id="toast"></div>
-    <script type="module" src="templates/js/otherjs.js"></script>
     <script>
         let users = {};
         let isUserSignedIn = false;
+        function closesignup() {
+    document.getElementById("signUpForm").style.display = "none";
+}
+        function closesignin() {
+    document.getElementById("signInForm").style.display = "none";
+}
+        function closeup() {
+    document.getElementById("signupPopup").style.display = window.location.href = "bot.html";
+}
 
-        
+document.getElementById("signupPdfUpload").addEventListener("change", function () {
+    const fileName = this.files.length > 0 ? this.files[0].name : "No file chosen";
+    document.getElementById("fileName").textContent = fileName;
+});
+
         async function sendMessageToChat() {
             const message = document.getElementById("userMessage").value;
             if (!message) return;

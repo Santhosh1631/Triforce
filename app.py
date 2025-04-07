@@ -18,8 +18,8 @@ db_config = {
     'database': 'triforcedb'
 }
 
-API_KEY = "AIzaSyCEa6dXXljP6ogJ5s3BEWBBli5R3cHG0ZA"
-CX = "c23d0e89bcb654d0a"
+API_KEY = "AIzaSyBOa-AAdB07HYRcZBABvPsibQijEqliJMw"
+CX = "503fed9c8bcde4171"
 
 conn = mysql.connector.connect(**db_config)
 cursor = conn.cursor()
@@ -46,7 +46,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 mysql = MySQL(app)
 # Configure the Google Generative AI API
-GOOGLE_API_KEY = "AIzaSyANpHL0jNHjyGuSUlZiUxcsxGCPvyq7Ock"
+GOOGLE_API_KEY = "AIzaSyBz4k_bgg9Mri1Mdr7BxIYff_TgDbpLaR4"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-pro')
 user_context={}
@@ -268,7 +268,7 @@ def chat():
 
         if(result["highest_strength"] == 'Perceptual Reasoning'): 
             images = get_image_urls(user_message, API_KEY, CX)
-            imageurl = images[0]
+            imageurl = images[1]
  
 
         return jsonify({"response": bot_response, "url" : imageurl})

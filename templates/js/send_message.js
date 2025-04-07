@@ -1,7 +1,3 @@
-let isSpeaking = false; // Flag to track if speech is currently playing
-let utterance = null; // Holds the current speech synthesis utterance
-let currentHighlight = null; // Tracks the currently highlighted word
-
 // Function to handle text copying to clipboard
 function copyTextToClipboard(text, copyIcon) {
   navigator.clipboard
@@ -35,7 +31,7 @@ function sendMessage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user_id: localStorage.getItem('userEmail'), // Replace with actual user ID logic if needed
+        user_id: localStorage.getItem('userEmail'),
         message: userInput,
       }),
     })
@@ -46,20 +42,19 @@ function sendMessage() {
         // Remove all `*` symbols from the response
         botResponse = botResponse.replace(/\*/g, "");
 
-        // Check for code block
-        const codeMatch = botResponse.match(/```([\s\S]*?)```/);
+        // Check for code block with optional language tag
+        const codeMatch = botResponse.match(/```(\w+)?\n([\s\S]*?)```/);
         if (codeMatch) {
-          const codeContent = codeMatch[1]; // Extract the code block
+          const language = codeMatch[1] || 'plaintext';
+          const codeContent = codeMatch[2];
 
-          // Display code in a styled container
           const codeContainer = document.createElement("div");
           codeContainer.classList.add("code-container");
 
-          // Add a preformatted block for the code
           const codeBlock = document.createElement("pre");
+          codeBlock.classList.add(`language-${language}`);
           codeBlock.textContent = codeContent;
 
-          // Add a copy icon
           const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
           copyIcon.setAttribute("class", "icon");
           copyIcon.setAttribute("viewBox", "0 0 24 24");
@@ -74,19 +69,16 @@ function sendMessage() {
           const botMessage = document.createElement("div");
           botMessage.classList.add("message", "bot-message");
 
-          // Split response into sections and display
           const sections = botResponse.split("\n\n");
           sections.forEach((section) => {
             if (section.trim()) {
               const [subheading, ...content] = section.split(":");
 
-              // Add subheading in bold
               const subheadingDiv = document.createElement("div");
               subheadingDiv.style.fontWeight = "bold";
               subheadingDiv.textContent = subheading.trim();
               botMessage.appendChild(subheadingDiv);
 
-              // Add content with headings highlighted
               const contentDiv = document.createElement("div");
               content.join(":").split("\n").forEach((paragraph) => {
                 const match = /^(.*?):(.*)$/.exec(paragraph.trim());
@@ -114,6 +106,27 @@ function sendMessage() {
           });
 
           chatBox.appendChild(botMessage);
+
+          // Add mic and copy icons
+          const iconContainer = document.createElement("div");
+          iconContainer.classList.add("icon-container");
+
+          const micIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          micIcon.setAttribute("class", "icon");
+          micIcon.setAttribute("viewBox", "0 0 24 24");
+          micIcon.innerHTML = `<path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`;
+          micIcon.onclick = () => toggleSpeech(botResponse, botMessage);
+
+          const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          copyIcon.setAttribute("class", "icon");
+          copyIcon.setAttribute("viewBox", "0 0 24 24");
+          copyIcon.innerHTML = `<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`;
+          copyIcon.onclick = () => copyTextToClipboard(botResponse, copyIcon);
+
+          iconContainer.appendChild(micIcon);
+          iconContainer.appendChild(copyIcon);
+          chatBox.appendChild(iconContainer);
+
           if (data.url) {
             const imageContainer = document.createElement("div");
             imageContainer.style.marginTop = "10px";
@@ -129,77 +142,75 @@ function sendMessage() {
 
             chatBox.appendChild(imageContainer);
           }
-
-          // Add mic and copy icons
-          const iconContainer = document.createElement("div");
-          iconContainer.classList.add("icon-container");
-
-          // Mic Icon
-          const micIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          micIcon.setAttribute("class", "icon");
-          micIcon.setAttribute("viewBox", "0 0 24 24");
-          micIcon.innerHTML = `<path d="M3 10v4h4l5 5V5L7 10H3zm13-4a8 8 0 0 1 0 12v-2a6 6 0 0 0 0-8v-2z" />`;
-          micIcon.onclick = () => toggleSpeech(botResponse, botMessage);
-
-          // Copy Icon
-          const copyIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          copyIcon.setAttribute("class", "icon");
-          copyIcon.setAttribute("viewBox", "0 0 24 24");
-          copyIcon.innerHTML = `<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 18H8V7h11v16z" />`;
-          copyIcon.onclick = () => copyTextToClipboard(botResponse, copyIcon);
-
-          iconContainer.appendChild(micIcon);
-          iconContainer.appendChild(copyIcon);
-          chatBox.appendChild(iconContainer);
         }
-        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+        chatBox.scrollTop = chatBox.scrollHeight;
       })
       .catch((error) => console.error("Error:", error));
-  }
+}
 }
 
 // Function to toggle speech with word highlighting
+let isSpeaking = false;
+let utterance;
+let availableVoices = [];
+let currentHighlight = null;
+
+// Load voices and store them
+window.speechSynthesis.onvoiceschanged = () => {
+  availableVoices = speechSynthesis.getVoices();
+};
+
 function toggleSpeech(text, messageElement) {
-  if ("speechSynthesis" in window) {
-    if (isSpeaking) {
-      speechSynthesis.cancel();
+  if (!("speechSynthesis" in window)) return;
+
+  if (isSpeaking) {
+    speechSynthesis.cancel();
+    isSpeaking = false;
+    removeHighlight();
+  } else {
+    removeHighlight();
+
+    utterance = new SpeechSynthesisUtterance(text);
+
+    // Select a female voice (avoid Google to keep highlighting working)
+    const voices = availableVoices.length ? availableVoices : speechSynthesis.getVoices();
+
+    const femaleVoice = voices.find(voice =>
+      voice.name.toLowerCase().includes("samantha") ||
+      voice.name.toLowerCase().includes("victoria") ||
+      voice.name.toLowerCase().includes("zira") ||
+      (voice.name.toLowerCase().includes("female") && !voice.name.toLowerCase().includes("google"))
+    ) || voices[0];
+
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
+    }
+
+    // Highlight current word as it's spoken
+    utterance.onboundary = function(event) {
+      const charIndex = event.charIndex;
+
+      const beforeText = text.substring(0, charIndex);
+      const remainingText = text.substring(charIndex);
+      const match = remainingText.match(/^\S+/);
+      let currentWord = match ? match[0] : "";
+
+      currentWord = currentWord.replace(/[.,;!?]+$/, '').trim();
+      if (currentWord) {
+        highlightWord(messageElement, currentWord);
+      }
+    };
+
+    utterance.onend = function() {
       isSpeaking = false;
       removeHighlight();
-    } else {
-      removeHighlight();
-      
-      // Create a new utterance
-      utterance = new SpeechSynthesisUtterance(text);
-      
-      utterance.onboundary = function(event) {
-        if (event.name === 'word') {
-          removeHighlight();
-          
-          const charIndex = event.charIndex;
-          const wordLength = event.charLength;
-          let currentWord = text.substr(charIndex, wordLength).trim();
-          
-          if (!currentWord) return;
-          
-          // Clean the word by removing any punctuation at the end
-          currentWord = currentWord.replace(/[.,;!?]$/, '');
-          if (!currentWord) return;
-          
-          // Find and highlight the word in the message element
-          highlightWord(messageElement, currentWord);
-        }
-      };
-      
-      utterance.onend = function() {
-        isSpeaking = false;
-        removeHighlight();
-      };
-      
-      speechSynthesis.speak(utterance);
-      isSpeaking = true;
-    }
+    };
+
+    speechSynthesis.speak(utterance);
+    isSpeaking = true;
   }
 }
+
 
 // Helper function to highlight a word in an element
 function highlightWord(element, word) {
