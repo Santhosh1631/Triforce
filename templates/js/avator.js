@@ -2,72 +2,90 @@ import * as THREE from "https://cdn.skypack.dev/three@0.129.0/build/three.module
 import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js";
 
-// Create a Three.JS Scene
+// Scene setup
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-    60, // Slightly smaller FOV for a slight zoom
-    window.innerWidth / window.innerHeight,
-    0.1,
-    10 // Reduce far distance to cut off parts of the avatar that are too far away
-);
-
-// Renderer setup
-const renderer = new THREE.WebGLRenderer({ alpha: true }); // Alpha allows a transparent background
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10);
+const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById("container3D").appendChild(renderer.domElement);
 
-// Lights
-const ambientLight = new THREE.AmbientLight(0x333333, 1);
-scene.add(ambientLight);
-
+// Lighting
+scene.add(new THREE.AmbientLight(0x333333, 1));
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(10, 10, 10);
 scene.add(directionalLight);
 
-// Orbit controls (keep the scene static)
+// Controls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableRotate = false; // Prevent rotation
-controls.enablePan = false;    // Prevent panning
-controls.enableZoom = false;   // Prevent zooming
-controls.update();
+controls.enableRotate = false;
+controls.enablePan = false;
+controls.enableZoom = false;
 
-// Load the .glb file
+// Avatar loading
 const loader = new GLTFLoader();
 let avatar;
-camera.position.set(0, 1, 2); // Move the camera closer to zoom in (without reducing the avatar size)
+let mouthMesh;
+let mouthIndex = -1;
+
+camera.position.set(0, 1, 2);
 
 loader.load(
-    "models/modelkc.glb", // Adjust the path as needed
-    function (gltf) {
-        avatar = gltf.scene;
+  "models/modelkc.glb",
+  (gltf) => {
+    avatar = gltf.scene;
+    avatar.scale.set(2, 2, 1);
+    avatar.position.set(0, -1.5, 0);
+    scene.add(avatar);
 
-        avatar.scale.set(2, 2, 1); // Keep the avatar's scale unchanged (do not reduce size)
-        avatar.position.set(0, -1.5, 0); // Move the avatar lower so only the legs are visible
-
-        // Optional: Focus the camera on the legs by adjusting position and angle
-        scene.add(avatar);
-    },
-    function (xhr) {
-        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-    },
-    function (error) {
-        console.error("An error occurred:", error);
-    }
+    avatar.traverse((child) => {
+      if (child.isMesh && child.morphTargetDictionary && child.morphTargetInfluences) {
+        const mouthKey = Object.keys(child.morphTargetDictionary).find(k =>
+          k.toLowerCase().includes("mouthopen") || k.toLowerCase().includes("open")
+        );
+        if (mouthKey) {
+          mouthMesh = child;
+          mouthIndex = child.morphTargetDictionary[mouthKey];
+        }
+      }
+    });
+  },
+  (xhr) => console.log((xhr.loaded / xhr.total) * 100 + "% loaded"),
+  (error) => console.error("An error occurred:", error)
 );
 
-// Resize handling
-window.addEventListener("resize", function () {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+// Mouth movement
+let mouthInterval = null;
 
-// Render the scene
-function animate() {
-    requestAnimationFrame(animate);
+export function startMouthMovement() {
+  if (!mouthMesh || mouthIndex === -1) return;
 
-    // Render the scene
-    renderer.render(scene, camera);
+  clearInterval(mouthInterval);
+  mouthInterval = setInterval(() => {
+    const value = Math.random(); // Simulate lip movement
+    mouthMesh.morphTargetInfluences[mouthIndex] = value;
+  }, 100);
 }
 
+export function stopMouthMovement() {
+  if (mouthInterval) {
+    clearInterval(mouthInterval);
+    mouthInterval = null;
+    if (mouthMesh && mouthIndex !== -1) {
+      mouthMesh.morphTargetInfluences[mouthIndex] = 0;
+    }
+  }
+}
+
+// Resize handling
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Animation loop
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
 animate();

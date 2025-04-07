@@ -148,150 +148,131 @@ function sendMessage() {
       .catch((error) => console.error("Error:", error));
 }
 }
+import { startMouthMovement, stopMouthMovement } from './avator.js';
+        // Function to toggle speech with word highlighting
+        let isSpeaking = false;
+        let utterance;
+        let availableVoices = [];
+        let currentHighlight = null;
 
-// Function to toggle speech with word highlighting
-let isSpeaking = false;
-let utterance;
-let availableVoices = [];
-let currentHighlight = null;
+        // Load voices and store them
+        window.speechSynthesis.onvoiceschanged = () => {
+          availableVoices = speechSynthesis.getVoices();
+        };
 
-// Load voices and store them
-window.speechSynthesis.onvoiceschanged = () => {
-  availableVoices = speechSynthesis.getVoices();
-};
+        function toggleSpeech(text, messageElement) {
+          if (!("speechSynthesis" in window)) return;
 
-function toggleSpeech(text, messageElement) {
-  if (!("speechSynthesis" in window)) return;
+          if (isSpeaking) {
+            speechSynthesis.cancel();
+            isSpeaking = false;
+            stopMouthMovement();
+            removeHighlight();
+          } else {
+            removeHighlight();
 
-  if (isSpeaking) {
-    speechSynthesis.cancel();
-    isSpeaking = false;
-    removeHighlight();
-  } else {
-    removeHighlight();
+            utterance = new SpeechSynthesisUtterance(text);
 
-    utterance = new SpeechSynthesisUtterance(text);
+            // Select a female voice (avoid Google to keep highlighting working)
+            const voices = availableVoices.length ? availableVoices : speechSynthesis.getVoices();
 
-    // Select a female voice (avoid Google to keep highlighting working)
-    const voices = availableVoices.length ? availableVoices : speechSynthesis.getVoices();
+            const femaleVoice = voices.find(voice =>
+              voice.name.toLowerCase().includes("samantha") ||
+              voice.name.toLowerCase().includes("victoria") ||
+              voice.name.toLowerCase().includes("zira") ||
+              (voice.name.toLowerCase().includes("female") && !voice.name.toLowerCase().includes("google"))
+            ) || voices[0];
 
-    const femaleVoice = voices.find(voice =>
-      voice.name.toLowerCase().includes("samantha") ||
-      voice.name.toLowerCase().includes("victoria") ||
-      voice.name.toLowerCase().includes("zira") ||
-      (voice.name.toLowerCase().includes("female") && !voice.name.toLowerCase().includes("google"))
-    ) || voices[0];
+            if (femaleVoice) {
+              utterance.voice = femaleVoice;
+            }
 
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
-    }
-
-    // Highlight current word as it's spoken
-    utterance.onboundary = function(event) {
-      const charIndex = event.charIndex;
-
-      const beforeText = text.substring(0, charIndex);
-      const remainingText = text.substring(charIndex);
-      const match = remainingText.match(/^\S+/);
-      let currentWord = match ? match[0] : "";
-
-      currentWord = currentWord.replace(/[.,;!?]+$/, '').trim();
-      if (currentWord) {
-        highlightWord(messageElement, currentWord);
-      }
-    };
-
-    utterance.onend = function() {
-      isSpeaking = false;
-      removeHighlight();
-    };
-
-    speechSynthesis.speak(utterance);
-    isSpeaking = true;
-  }
-}
+            // Highlight current word as it's spoken
+            utterance.onboundary = function(event) {
+              const charIndex = event.charIndex;
+              const beforeText = text.substring(0, charIndex);
+              const remainingText = text.substring(charIndex);
+              const match = remainingText.match(/^\S+/);
+              let currentWord = match ? match[0] : "";
+            
+              currentWord = currentWord.replace(/[.,;!?]+$/, '').trim();
+            
+              if (currentWord) {
+                highlightWord(messageElement, currentWord, charIndex);
+              }
+            };
+            utterance.onstart = function() {
+              startMouthMovement();
+            };
+            utterance.onend = function() {
+              isSpeaking = false;
+              stopMouthMovement();
+              removeHighlight();
+            };
+            speechSynthesis.speak(utterance);
+            isSpeaking = true;
+          }
+        }
 
 
-// Helper function to highlight a word in an element
-function highlightWord(element, word) {
-  // First remove any existing highlights
-  removeHighlight();
-  
-  // Create a regex to match the word (case insensitive)
-  const regex = new RegExp(`\\b${word}\\b`, 'gi');
-  
-  // Walk through all text nodes in the element
-  const treeWalker = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  
-  let node;
-  while (node = treeWalker.nextNode()) {
-    const nodeText = node.nodeValue;
-    const match = regex.exec(nodeText);
-    
-    if (match) {
-      // Split the text node into parts
-      const before = nodeText.substring(0, match.index);
-      const highlighted = nodeText.substring(match.index, match.index + match[0].length);
-      const after = nodeText.substring(match.index + match[0].length);
-      
-      // Create new nodes
-      const beforeNode = document.createTextNode(before);
-      const highlightNode = document.createElement('span');
-      highlightNode.className = 'speech-highlight';
-      highlightNode.textContent = highlighted;
-      const afterNode = document.createTextNode(after);
-      
-      // Replace the original node with new nodes
-      const parent = node.parentNode;
-      parent.insertBefore(beforeNode, node);
-      parent.insertBefore(highlightNode, node);
-      parent.insertBefore(afterNode, node);
-      parent.removeChild(node);
-      
-      // Store reference to current highlight
-      currentHighlight = highlightNode;
-      
-      // Scroll to the highlighted word
-      highlightNode.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest'
-      });
-      
-      break;
-    }
-  }
-}
+        // Helper function to highlight a word in an element
+        function highlightWord(element, word, charIndex) {
+          removeHighlight();
+        
+          if (!word || !charIndex) return;
+        
+          const textContent = element.textContent;
+        
+          // Find the word starting from the current spoken character index
+          const wordIndex = textContent.indexOf(word, charIndex);
+        
+          if (wordIndex === -1) return;
+        
+          const before = textContent.slice(0, wordIndex);
+          const highlight = textContent.slice(wordIndex, wordIndex + word.length);
+          const after = textContent.slice(wordIndex + word.length);
+        
+          element.innerHTML = `${before}<span class="speech-highlight">${highlight}</span>${after}`;
+        
+          currentHighlight = element.querySelector(".speech-highlight");
+        
+          if (currentHighlight) {
+            currentHighlight.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest"
+            });
+          }
+        }
+        
 
-// Helper function to remove highlight
-function removeHighlight() {
-  if (currentHighlight) {
-    const parent = currentHighlight.parentNode;
-    const text = currentHighlight.textContent;
-    const textNode = document.createTextNode(text);
-    parent.replaceChild(textNode, currentHighlight);
-    currentHighlight = null;
-  }
-}
 
-// Add the highlight style
-const style = document.createElement('style');
-style.textContent = `
-  .speech-highlight {
-    background-color: rgba(255, 255, 0, 0.5);
-    border-radius: 3px;
-    transition: background-color 0.3s;
-  }
-`;
-document.head.appendChild(style);
 
-// Add event listeners for input and send button
-document.getElementById("send-btn").addEventListener("click", sendMessage);
 
-document.getElementById("user-input").addEventListener("keydown", (event) => {
-  if (event.key === "Enter") sendMessage();
-});
+        // Helper function to remove highlight
+        function removeHighlight() {
+          if (currentHighlight) {
+            const parent = currentHighlight.parentNode;
+            const text = currentHighlight.textContent;
+            const textNode = document.createTextNode(text);
+            parent.replaceChild(textNode, currentHighlight);
+            currentHighlight = null;
+          }
+        }
+
+        // Add the highlight style
+        const style = document.createElement('style');
+        style.textContent = `
+          .speech-highlight {
+            background-color: rgba(255, 255, 0, 0.5);
+            border-radius: 3px;
+            transition: background-color 0.3s;
+          }
+        `;
+        document.head.appendChild(style);
+
+        // Add event listeners for input and send button
+        document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+        document.getElementById("user-input").addEventListener("keydown", (event) => {
+          if (event.key === "Enter") sendMessage();
+        });
