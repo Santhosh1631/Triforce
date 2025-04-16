@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify# type: ignore
+from flask import Flask, request, jsonify,render_template# type: ignore
 from flask_cors import CORS# type: ignore
 from flask_mysqldb import MySQL # type: ignore
 import bcrypt# type: ignore
@@ -277,9 +277,18 @@ def chat():
         return jsonify({"response": f"Error: {str(e)}"}), 500
 
 # Health check endpoint
+@app.route("/bot")
+def bot():
+    return render_template("bot.html")
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
 @app.route("/health", methods=["GET"])
 def health_check():
     return jsonify({"status": "healthy"}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
+

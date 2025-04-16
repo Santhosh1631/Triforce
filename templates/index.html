@@ -1,787 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avatar Chat with Profile Menu</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="static/styles.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap');
-    
-    body {
-      margin: 0;
-      font-family: 'Lexend', sans-serif;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      align-items: center;
-      background-image: url('img/kesikabg3.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Chatbot</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            color: #fff;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background-image: url('static/img/kesikabg2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .content {
+            padding: 40px;
+            max-width: 500px;
+            text-align: left;
+            margin-left: 50px;
+        }
+
+        header h1 {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #007bff, #ff69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #6a11cb, #f750c2);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #f750c2, #6a11cb);
+            transform: scale(1.05);
+        }
+
+        .hero {
+            margin-top: 40px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #eaeaea;
+        }
+
+        /* Sign In / Sign Up Modal */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .popup-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+            z-index: 1000;
+        }
+        .popup-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .popup-submit {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #6a11cb, #f750c2);
+            color: #fff;
+            border: none;
+            margin-top: 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .popup-submit:hover {
+            background: linear-gradient(135deg, #f750c2, #6a11cb);
+            transform: scale(1.05);
+        }
+
+        /* Toast Notification */
+        #toast {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1001;
+        }
+        .custom-file-upload {
+        display: inline-block;
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #cdcdcd;
+        color: white;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
     }
 
-    .main-container {
-      display: flex;
-      width: 100%;
-      height: 100%;
+    .custom-file-upload:hover {
+        background-color: #969696;
     }
 
-    .avatar-container {
-      width: 30%;
-      display: flex;
+    #signupPdfUpload {
+        display: none;
+    }
+    #signinPdfUpload {
+        display: none;
     }
 
-    .chat-container {
-      width: 66%;
-      display: flex;
-      flex-direction: column;
+    .file-name {
+        margin-left: 10px;
+        font-style: italic;
+        font-size: 14px;
     }
-
-    .profile-menu {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      cursor: pointer;
-    }
-
-    .profile-icon {
-      font-size: 24px;
-      color: white;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 10px;
-      border-radius: 50%;
-    }
-
-    .menu-dropdown {
-      display: none;
-      position: absolute;
-      top: 40px;
-      right: 0;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-      width: 200px;
-    }
-
-    .menu-dropdown ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .menu-dropdown ul li {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .menu-dropdown ul li:last-child {
-      border-bottom: none;
-    }
-
-    .menu-dropdown ul li i {
-      margin-right: 10px;
-      color: #555;
-    }
-
-    .menu-dropdown ul li:hover {
-      background: #f5f5f5;
-    }
-
-    /* Customize ZenBot Popup */
-    .customize-popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-      z-index: 1000;
-      width: 300px;
-    }
-
-    .customize-popup h3 {
-      margin: 0 0 15px;
-      font-size: 18px;
-      text-align: center;
-    }
-
-    .customize-popup label {
-      display: block;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-
-    .customize-popup select,
-    .customize-popup input {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .customize-popup button {
-      width: 100%;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .customize-popup button:hover {
-      background: #0056b3;
-    }
-
-    .word {
-      transition: background-color 0.3s ease;
-    }
-
-    .highlight {
-      background-color: #ffeb3b;
-      color: #000;
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-weight: bold;
-      animation: highlight-pulse 1s infinite;
-    }
-
-    @keyframes highlight-pulse {
-      0% {
-        background-color: #ffeb3b;
-      }
-      50% {
-        background-color: #ffcc80;
-      }
-      100% {
-        background-color: #ffeb3b;
-      }
-    }
-  </style>
-  <style>
-    /* Pop-up Container */
-    .popup-container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      padding: 20px;
-      width: 320px;
-      border-radius: 10px;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      display: none;
-      z-index: 1001;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-    }
-    
-    .success-popup {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      display: none;
-      font-size: 14px;
-      z-index: 1100;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-      text-align: center;
-    }
-
-    /* Input Fields */
-    .user-name, .user-phone, .user-email {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    /* Submit Button */
-    .popup-submit {
-      background: #6a5acd;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    
-    .highlighted-word {
-      background-color: yellow;
-      padding: 2px;
-      border-radius: 4px;
-    }
-
-    .popup-submit:hover {
-      background: #483d8b;
-    }
-    
-    .error-message {
-      color: red;
-      font-size: 12px;
-      margin-top: -8px;
-      margin-bottom: 5px;
-      text-align: left;
-      padding-left: 10px;
-      display: none;
-    }
-  </style>
+    </style>
 </head>
+
 <body>
-  <div class="profile-menu" onclick="toggleMenu()">
-    <i id="dynamicProfileIcon" class="fas fa-user profile-icon"></i>
-    <div class="menu-dropdown" id="menuDropdown">
-      <ul>
-        <li><i class="fas fa-envelope"></i> <span id="userEmailDisplay">Loading...</span></li>
-        <li onclick="openCustomizePopup()"><i class="fas fa-cogs"></i> Customize ZenBot</li>
-        <li onclick="openContactPopup()"><i class="fas fa-phone"></i> Contact Us</li>
-        <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
-      </ul>
+    <div class="content">
+        <header>
+            <h1>ZenBot</h1>
+            <p>Your AI companion, always here for you.</p>
+            <button class="btn" onclick="startChat()">Start Chatting</button>
+        </header>
+        <section class="hero">
+            <p style="text-align: justify;">
+                "ZenBot is a compassionate chatbot tailored for neurodivergent students. It provides personalized support and adaptive learning tools to meet diverse cognitive needs. With advanced emotional recognition, it detects user emotions and adjusts
+            content accordingly. Features like simplified text, progress tracking, and tailored responses create an inclusive experience. Triforce ensures a supportive environment, fostering understanding and growth."
+            </p>
+        </section>
     </div>
-  </div>
 
-  <div id="successPopup" class="success-popup">
-    <p>Message sent successfully!</p>
-  </div>
-
-  <!-- Customize ZenBot Popup -->
-  <div class="overlay" id="overlay"></div>
-  <div class="customize-popup" id="customizePopup">
-    <h3>Customize ZenBot</h3>
-    <label for="fontSelect">Font:</label>
-    <select id="fontSelect" onchange="changeFont()">
-      <option value="Verdana, sans-serif">Verdana</option>
-      <option value="OpenDyslexic, sans-serif">OpenDyslexic</option>
-      <option value="Sans, sans-serif">Sans</option>
-      <option value="Roboto, sans-serif">Roboto</option>
-      <option value="Helvetica, sans-serif">Helvetica</option>
-    </select>
-    <label for="fontSize">Font Size:</label>
-    <input type="number" id="fontSize" min="10" max="50" value="14">
-    <label for="lineSpacing">Line Spacing:</label>
-    <input type="number" id="lineSpacing" min="1" max="3" step="0.1" value="1.5">
-    <label for="letterSpacing">Letter Spacing:</label>
-    <input type="number" id="letterSpacing" min="0" max="5" step="0.1" value="0">
-    <button onclick="applyCustomization()">Apply</button>
-  </div>
-
-  <!-- Contact Us Popup -->
-  <div class="overlay" id="contactOverlay" onclick="closeContactPopup()"></div>
-  <div class="popup-container" id="contactPopup">
-    <h2>Get in Touch</h2>
-    <p>The exclusive design launches on 10/10!</p>
-    <p><strong>Sign up for early access!</strong></p>
-    <input type="text" class="user-name" id="contactName" placeholder="Full Name" required>
-    <div id="nameError" class="error-message">Please enter your name</div>
-    <input type="email" class="user-email" id="contactEmail" placeholder="Email Address" required>
-    <div id="emailError" class="error-message">Please enter a valid email</div>
-    <input type="tel" class="user-phone" id="contactPhone" placeholder="Phone Number" required>
-    <div id="phoneError" class="error-message">Please enter a valid phone number</div>
-    <button id="submitBtn" class="popup-submit" onclick="validateAndSend()">Send</button>
-  </div>
-  
-  <div class="main-container">
-    <div class="avatar-container">
-      <div id="container3D"></div>
-    </div>
-    <div class="chat-container">
-      <div class="chat-box" id="chat-box" type="text">
-        <div class="message bot-message">
-          <div class="response-title">Hi! How can I assist you today?</div>
+    <!-- Login Modal -->
+    <div class="overlay" id="signupOverlay"></div>
+    <div class="popup-container" id="signupPopup">
+        <div class="popup-tabs">
+            <span onclick="closeup()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px; color:black">&times;</span>
+            <button class="btn" onclick="showSignIn()">Sign In</button>
+            <button class="btn" onclick="showSignUp()">Sign Up</button>
         </div>
-      </div>
-      <div class="input-container">
-        <input type="text" id="user-input" placeholder="Ask Something...">
-        <button class="speak-button" id="mic-btn">🎙</button>
-        <button id="send-btn">Send</button>
-        <button id="stop-btn" style="display: none;">Stop</button>
-      </div>
+
+        <div id="signInForm"style="display: none; padding-right:20px">
+            <span onclick="closesignin()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px;color:black">&times;</span>
+            <h2 style="color: black;">Sign In</h2>
+            <input type="email" id="signinEmail" placeholder="Email" required>
+            <input type="password" id="signinPassword" placeholder="Password" required>
+            <label for="signupPdfUpload" class="custom-file-upload" style="color: black;">Choose PDF</label>
+            <span style="color: black;"id="fileName" class="file-name">No file chosen(optional)</span>
+            <input type="file" id="signinPdfUpload" accept=".pdf"><br>
+            <button class="popup-submit" onclick="submitSignIn()">Sign In</button>
+        </div>
+
+        <div id="signUpForm" style="display: none; padding-right:20px">
+            <span onclick="closesignup()" style="position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px;color:black">&times;</span>
+            <h2  style="color: black;">Sign Up</h2>
+            <input type="text" id="signupName" placeholder="Full Name" required>
+            <input type="email" id="signupEmail" placeholder="Email" required>
+            <input type="password" id="signupPassword" placeholder="Password" required>
+            <label for="signupPdfUpload" class="custom-file-upload" style="color: black;">Choose PDF</label>
+            <span style="color: black;"id="fileName" class="file-name">No file chosen(mandatory)</span>
+            <input type="file" id="signupPdfUpload" accept=".pdf">
+            <button class="popup-submit" onclick="submitSignup()">Sign Up</button>
+        </div>
     </div>
-  </div>
 
-  <script type="module" src="js/avator.js"></script>
-  <script type="module" src="js/send_message.js"></script>
-  <script type="module" src="js/speechtotext.js"></script>
- 
-  <script>
-    
-// Display user email in profile menu
-function displayUserEmail() {
-        const userEmail = localStorage.getItem('userEmail');
-        const emailDisplay = document.getElementById('userEmailDisplay');
-        
-        if (userEmail) {
-            emailDisplay.textContent = userEmail;
-        } else {
-            emailDisplay.textContent = 'Not signed in';
-            // Redirect to login if not signed in
-            window.location.href = "../index.html";
-        }
-    }
-
-    // Update logout function
-    function logout() {
-        localStorage.removeItem('userEmail');
-        window.location.href = "../bot.html";
-    }
-
-    // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        displayUserEmail();
-        
-        // Rest of your existing initialization code
-        const username = "User";
-        const avatarIcon = generateAvatarIcon(username);
-        document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
-    });
-// On page load, check for stored email
-document.addEventListener('DOMContentLoaded', function() {
-  const storedEmail = localStorage.getItem('userEmail');
-  if (storedEmail) {
-    updateUserEmail(storedEmail);
-  }
-  function updateUserEmail() {
-    const email = localStorage.getItem('userEmail');
-    if (email) {
-        document.getElementById("userEmailDisplay").textContent = email;
-    }
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+    <script>
+        let users = {};
+        let isUserSignedIn = false;
+        function closesignup() {
+    document.getElementById("signUpForm").style.display = "none";
 }
-  // Initialize avatar icon
-  const username = "User";
-  const avatarIcon = generateAvatarIcon(username);
-  document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
+        function closesignin() {
+    document.getElementById("signInForm").style.display = "none";
+}
+        function closeup() {
+    document.getElementById("signupPopup").style.display = window.location.href = "index.html";
+}
+
+document.getElementById("signupPdfUpload").addEventListener("change", function () {
+    const fileName = this.files.length > 0 ? this.files[0].name : "No file chosen";
+    document.getElementById("fileName").textContent = fileName;
 });
 
-// When user logs in (assuming you have a login function)
-function handleLogin(email) {
-  updateUserEmail(email);
-  // Rest of your login logic...
-}
+        async function sendMessageToChat() {
+            const message = document.getElementById("userMessage").value;
+            if (!message) return;
 
-    // Close popup function
-    function closePopup() {
-      document.getElementById("contactPopup").style.display = "none";
-      document.getElementById("contactOverlay").style.display = "none";
-    }
-
-    // Toggle profile menu
-    function toggleMenu() {
-      var menu = document.getElementById("menuDropdown");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
-
-    // Close menu when clicking outside
-    document.addEventListener("click", function(event) {
-      var profileMenu = document.querySelector(".profile-menu");
-      var menu = document.getElementById("menuDropdown");
-      if (!profileMenu.contains(event.target)) {
-        menu.style.display = "none";
-      }
-    });
-
-    // Generate avatar icon based on username
-    function generateAvatarIcon(username) {
-      const avatars = ["fa-user", "fa-user-ninja", "fa-user-secret", "fa-user-astronaut", "fa-user-tie"];
-      const index = username ? username.charCodeAt(0) % avatars.length : 0;
-      return avatars[index];
-    }
-
-  
-
-    // Customize popup functions
-    function openCustomizePopup() {
-      document.getElementById("customizePopup").style.display = "block";
-      document.getElementById("overlay").style.display = "block";
-    }
-
-    function applyCustomization() {
-      const font = document.getElementById("fontSelect").value;
-      const fontSize = document.getElementById("fontSize").value + "px";
-      const lineSpacing = document.getElementById("lineSpacing").value + "em";
-      const letterSpacing = document.getElementById("letterSpacing").value + "px";
-
-      document.body.style.fontFamily = font;
-      document.body.style.fontSize = fontSize;
-      document.body.style.lineHeight = lineSpacing;
-      document.body.style.letterSpacing = letterSpacing;
-
-      closeCustomizePopup();
-    }
-
-    function closeCustomizePopup() {
-      document.getElementById("customizePopup").style.display = "none";
-      document.getElementById("overlay").style.display = "none";
-    }
-
-    // Initialize avatar icon
-    document.addEventListener("DOMContentLoaded", function() {
-      const username = "User";
-      const avatarIcon = generateAvatarIcon(username);
-      document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
-    });
-
-    // Contact popup functions
-    function openContactPopup() {
-      document.getElementById("contactPopup").style.display = "block";
-      document.getElementById("contactOverlay").style.display = "block";
-      // Clear previous inputs and errors
-      document.getElementById("contactName").value = "";
-      document.getElementById("contactEmail").value = "";
-      document.getElementById("contactPhone").value = "";
-      document.getElementById("nameError").style.display = "none";
-      document.getElementById("emailError").style.display = "none";
-      document.getElementById("phoneError").style.display = "none";
-    }
-
-    function closeContactPopup() {
-      document.getElementById("contactPopup").style.display = "none";
-      document.getElementById("contactOverlay").style.display = "none";
-    }
-
-    // Form validation and submission
-    function validateAndSend() {
-      const name = document.getElementById("contactName").value.trim();
-      const email = document.getElementById("contactEmail").value.trim();
-      const phone = document.getElementById("contactPhone").value.trim();
-      
-      let isValid = true;
-      
-      // Validate name
-      if (name === "") {
-        document.getElementById("nameError").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("nameError").style.display = "none";
-      }
-      
-      // Validate email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        document.getElementById("emailError").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("emailError").style.display = "none";
-      }
-      
-      // Validate phone (simple validation)
-      const phoneRegex = /^[0-9]{10,15}$/;
-      if (!phoneRegex.test(phone)) {
-        document.getElementById("phoneError").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("phoneError").style.display = "none";
-      }
-      
-      if (isValid) {
-        sendContactForm(name, email, phone);
-      }
-    }
-
-    // Send contact form data to server
-   // Send contact form data to server
-   function sendContactForm(name, email, phone) {
-    const submitBtn = document.getElementById("submitBtn");
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-    fetch('http://localhost:5001/submit_contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone })
-    })
-    .then(response => {
-        if (!response.ok) {
-            // Log the response body for debugging
-            return response.json().then(err => {
-                console.error("Server error details:", err);
-                throw new Error(err.message || "Server error");
+            const response = await fetch("http://localhost:5001/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message, user_id: "default" })
             });
+            
+            const data = await response.json();
+            document.getElementById("chatResponse").innerText = data.response;
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            document.getElementById("successPopup").style.display = "block";
-            setTimeout(() => {
-                document.getElementById("successPopup").style.display = "none";
-                closeContactPopup();
-            }, 2000);
-        } else {
-            alert("Error: " + data.message);
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = isError ? "error" : "";
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
         }
-    })
-    .catch(error => {
-        console.error("Full error:", error);
-        alert("Failed to submit: " + error.message);
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send';
-    });
-}  
-      // Show loading stat
-
-    // Copy to clipboard function
-    function copyToClipboard(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied: " + text);
-      });
-    }
-// Display user email in profile menu
-function displayUserEmail() {
-        const userEmail = localStorage.getItem('userEmail');
-        const emailDisplay = document.getElementById('userEmailDisplay');
-        
-        if (userEmail) {
-            emailDisplay.textContent = userEmail;
-        } else {
-            emailDisplay.textContent = 'Not signed in';
-            // Redirect to login if not signed in
-            window.location.href = "../index.html";
+        function startChat() {
+            if (!isUserSignedIn) {
+                document.getElementById("signupOverlay").style.display = "block";
+                document.getElementById("signupPopup").style.display = "block";
+            } else {
+                window.location.href = "/bot";
+            }
         }
-    }
 
-    // Update logout function
-    function logout() {
-        localStorage.removeItem('userEmail');
-        window.location.href = "../bot.html";
-    }
+        function showSignIn() {
+            document.getElementById("signInForm").style.display = "block";
+            document.getElementById("signUpForm").style.display = "none";
+        }
 
-    // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        displayUserEmail();
-        
-        // Rest of your existing initialization code
-        const username = "User";
-        const avatarIcon = generateAvatarIcon(username);
-        document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
-    });
-// On page load, check for stored email
-document.addEventListener('DOMContentLoaded', function() {
-  const storedEmail = localStorage.getItem('userEmail');
-  if (storedEmail) {
-    updateUserEmail(storedEmail);
-  }
-  function updateUserEmail() {
-    const email = localStorage.getItem('userEmail');
-    if (email) {
-        document.getElementById("userEmailDisplay").textContent = email;
-    }
-}
-  // Initialize avatar icon
-  const username = "User";
-  const avatarIcon = generateAvatarIcon(username);
-  document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
-});
+        function showSignUp() {
+            document.getElementById("signUpForm").style.display = "block";
+            document.getElementById("signInForm").style.display = "none";
+        }
 
-// When user logs in (assuming you have a login function)
-function handleLogin(email) {
-  updateUserEmail(email);
-  // Rest of your login logic...
-}
+        async function submitSignup() {
+            const name = document.getElementById("signupName").value;
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+            const file = document.getElementById("signupPdfUpload").files[0];
 
-    // Close popup function
-    function closePopup() {
-      document.getElementById("contactPopup").style.display = "none";
-      document.getElementById("contactOverlay").style.display = "none";
-    }
+            if (!name || !email || !password || !file) {
+                showToast("Please fill out all fields and upload a PDF", true);
+                return;
+            }
 
-    // Toggle profile menu
-    function toggleMenu() {
-      var menu = document.getElementById("menuDropdown");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("email", email);
+            formData.append("password", password);
+            formData.append("pdf", file);
 
-    // Close menu when clicking outside
-    document.addEventListener("click", function(event) {
-      var profileMenu = document.querySelector(".profile-menu");
-      var menu = document.getElementById("menuDropdown");
-      if (!profileMenu.contains(event.target)) {
-        menu.style.display = "none";
-      }
-    });
-
-    // Generate avatar icon based on username
-    function generateAvatarIcon(username) {
-      const avatars = ["fa-user", "fa-user-ninja", "fa-user-secret", "fa-user-astronaut", "fa-user-tie"];
-      const index = username ? username.charCodeAt(0) % avatars.length : 0;
-      return avatars[index];
-    }
-
-  
-
-    // Customize popup functions
-    function openCustomizePopup() {
-      document.getElementById("customizePopup").style.display = "block";
-      document.getElementById("overlay").style.display = "block";
-    }
-
-    function applyCustomization() {
-      const font = document.getElementById("fontSelect").value;
-      const fontSize = document.getElementById("fontSize").value + "px";
-      const lineSpacing = document.getElementById("lineSpacing").value + "em";
-      const letterSpacing = document.getElementById("letterSpacing").value + "px";
-
-      document.body.style.fontFamily = font;
-      document.body.style.fontSize = fontSize;
-      document.body.style.lineHeight = lineSpacing;
-      document.body.style.letterSpacing = letterSpacing;
-
-      closeCustomizePopup();
-    }
-
-    function closeCustomizePopup() {
-      document.getElementById("customizePopup").style.display = "none";
-      document.getElementById("overlay").style.display = "none";
-    }
-
-    // Initialize avatar icon
-    document.addEventListener("DOMContentLoaded", function() {
-      const username = "User";
-      const avatarIcon = generateAvatarIcon(username);
-      document.getElementById("dynamicProfileIcon").className = `fas ${avatarIcon} profile-icon`;
-    });
-
-    // Contact popup functions
-    function openContactPopup() {
-      document.getElementById("contactPopup").style.display = "block";
-      document.getElementById("contactOverlay").style.display = "block";
-      // Clear previous inputs and errors
-      document.getElementById("contactName").value = "";
-      document.getElementById("contactEmail").value = "";
-      document.getElementById("contactPhone").value = "";
-      document.getElementById("nameError").style.display = "none";
-      document.getElementById("emailError").style.display = "none";
-      document.getElementById("phoneError").style.display = "none";
-    }
-
-    function closeContactPopup() {
-      document.getElementById("contactPopup").style.display = "none";
-      document.getElementById("contactOverlay").style.display = "none";
-    }
-
-    // Form validation and submission
-    function validateAndSend() {
-      const name = document.getElementById("contactName").value.trim();
-      const email = document.getElementById("contactEmail").value.trim();
-      const phone = document.getElementById("contactPhone").value.trim();
-      
-      let isValid = true;
-      
-      // Validate name
-      if (name === "") {
-        document.getElementById("nameError").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("nameError").style.display = "none";
-      }
-      
-      // Validate email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        document.getElementById("emailError").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("emailError").style.display = "none";
-      }
-      
-      // Validate phone (simple validation)
-      const phoneRegex = /^[0-9]{10,15}$/;
-      if (!phoneRegex.test(phone)) {
-        document.getElementById("phoneError").style.display = "block";
-        isValid = false;
-      } else {
-        document.getElementById("phoneError").style.display = "none";
-      }
-      
-      if (isValid) {
-        sendContactForm(name, email, phone);
-      }
-    }
-
-    // Send contact form data to server
-   // Send contact form data to server
-   function sendContactForm(name, email, phone) {
-    const submitBtn = document.getElementById("submitBtn");
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-    fetch('http://localhost:5001/submit_contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone })
-    })
-    .then(response => {
-        if (!response.ok) {
-            // Log the response body for debugging
-            return response.json().then(err => {
-                console.error("Server error details:", err);
-                throw new Error(err.message || "Server error");
+            const response = await fetch("http://localhost:5001/register", {
+                method: "POST",
+                body: formData
             });
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            document.getElementById("successPopup").style.display = "block";
-            setTimeout(() => {
-                document.getElementById("successPopup").style.display = "none";
-                closeContactPopup();
-            }, 2000);
-        } else {
-            alert("Error: " + data.message);
-        }
-    })
-    .catch(error => {
-        console.error("Full error:", error);
-        alert("Failed to submit: " + error.message);
-    })
-    .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send';
-    });
-}  
-      // Show loading stat
 
-    // Copy to clipboard function
-    function copyToClipboard(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied: " + text);
-      });
-    }
-  </script>
+            const data = await response.json();
+            showToast(data.message || data.error, !response.ok);
+
+            if (response.ok) {
+                closeModalsignup();
+                startChat();
+            }
+        }
+
+        async function submitSignIn() {
+            const email = document.getElementById("signinEmail").value;
+            const password = document.getElementById("signinPassword").value;
+
+            if (!email || !password) {
+                showToast("Please enter email and password", true);
+                return;
+            }
+
+            const response = await fetch("http://localhost:5001/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+            showToast(data.message || data.error, !response.ok);
+
+            if (response.ok) {
+                // Store email in localStorage
+                localStorage.setItem('userEmail', email);
+                isUserSignedIn = true;
+                document.getElementById("signupOverlay").style.display = "none";
+                document.getElementById("signupPopup").style.display = "none";
+                startChat();
+            }
+        }
+
+    </script>
 </body>
 </html>
