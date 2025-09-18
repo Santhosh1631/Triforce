@@ -16,7 +16,7 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            background-image: url('static/img/kesikabg2.jpg');
+            background-image: url('{{ url_for('static', filename='img/kesikabg2.jpg') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -220,7 +220,13 @@
     document.getElementById("signInForm").style.display = "none";
 }
         function closeup() {
-    document.getElementById("signupPopup").style.display = window.location.href = "index.html";
+    document.getElementById("signupPopup").style.display = "none";
+    document.getElementById("signupOverlay").style.display = "none";
+}
+
+        function closeModalsignup() {
+    document.getElementById("signupPopup").style.display = "none";
+    document.getElementById("signupOverlay").style.display = "none";
 }
 
 document.getElementById("signupPdfUpload").addEventListener("change", function () {
@@ -232,7 +238,7 @@ document.getElementById("signupPdfUpload").addEventListener("change", function (
             const message = document.getElementById("userMessage").value;
             if (!message) return;
 
-            const response = await fetch("http://localhost:5001/chat", {
+            const response = await fetch("/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message, user_id: "default" })
@@ -285,7 +291,7 @@ document.getElementById("signupPdfUpload").addEventListener("change", function (
             formData.append("password", password);
             formData.append("pdf", file);
 
-            const response = await fetch("http://localhost:5001/register", {
+            const response = await fetch("/register", {
                 method: "POST",
                 body: formData
             });
@@ -308,7 +314,7 @@ document.getElementById("signupPdfUpload").addEventListener("change", function (
                 return;
             }
 
-            const response = await fetch("http://localhost:5001/login", {
+            const response = await fetch("/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })

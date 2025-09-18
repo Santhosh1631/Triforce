@@ -30,7 +30,7 @@ let mouthIndex = -1;
 camera.position.set(0, 1, 2);
 
 loader.load(
-  "static/models/modelkc.glb",
+  "/static/models/modelkc.glb",
   (gltf) => {
     avatar = gltf.scene;
     avatar.scale.set(2, 2, 1);

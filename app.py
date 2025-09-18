@@ -46,9 +46,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 mysql = MySQL(app)
 # Configure the Google Generative AI API
-GOOGLE_API_KEY = "AIzaSyBz4k_bgg9Mri1Mdr7BxIYff_TgDbpLaR4"
+GOOGLE_API_KEY = "AIzaSyBS7cWquirQFYafLtbtSAg-wFY-WLlEO78"
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-pro')
+model = genai.GenerativeModel('gemini-2.0-flash')
 user_context={}
 def validate_email(email):
     """Validate email format."""
@@ -260,11 +260,49 @@ def chat():
         user_context[user_id].append(f"User: {user_message}")
         conversation_history = "\n".join(user_context[user_id])
 
-        # Generate response
-        response = model.generate_content(contents=[{"parts": [{"text": conversation_history}]}])
-        bot_response = response.parts[0].text
-        user_context[user_id].append(f"Bot: {bot_response}")
-        imageurl = None
+        # Generate response with safety settings and error handling
+        try:
+            generation_config = {
+                "temperature": 0.7,
+                "top_p": 0.95,
+                "top_k": 40,
+            }
+            safety_settings = [
+                {
+                    "category": "HARM_CATEGORY_HARASSMENT",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    "category": "HARM_CATEGORY_HATE_SPEECH",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                },
+                {
+                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
+                }
+            ]
+            
+            response = model.generate_content(
+                contents=[{"parts": [{"text": conversation_history}]}],
+                generation_config=generation_config,
+                safety_settings=safety_settings
+            )
+            
+            # Check if response was blocked
+            if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                bot_response = "I'm sorry, but I can't respond to that kind of content. Please try a different question."
+            else:
+                bot_response = response.parts[0].text
+                
+            user_context[user_id].append(f"Bot: {bot_response}")
+            imageurl = None
+        except Exception as e:
+            bot_response = f"I'm having trouble generating a response right now. Please try again or ask a different question. Error details: {str(e)}"
+            imageurl = None
 
         if(result["highest_strength"] == 'Perceptual Reasoning'): 
             images = get_image_urls(user_message, API_KEY, CX)
@@ -274,7 +312,8 @@ def chat():
         return jsonify({"response": bot_response, "url" : imageurl})
 
     except Exception as e:
-        return jsonify({"response": f"Error: {str(e)}"}), 500
+        print(f"Chat error: {str(e)}")
+        return jsonify({"response": "I'm sorry, I encountered an error processing your request. Please try again later."}), 500
 
 # Health check endpoint
 @app.route("/bot")
@@ -288,6 +327,10 @@ def home():
 @app.route("/health", methods=["GET"])
 def health_check():
     return jsonify({"status": "healthy"}), 200
+
+@app.route("/models/<path:filename>")
+def serve_model(filename):
+    return app.send_static_file(f"models/{filename}")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

@@ -27,7 +27,7 @@ function sendMessage() {
     document.getElementById("user-input").value = ""; // Clear input field
 
     // Fetch the bot response from the server
-    fetch("http://localhost:5001/chat", {
+    fetch("/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
